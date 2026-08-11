@@ -1,0 +1,29 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/unit/test_schemas.py __________________
+tests/unit/test_schemas.py:6: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/__init__.py:6: in <module>
+    from hcx_eval.schemas.results import RawResult
+src/hcx_eval/schemas/results.py:35: in <module>
+    class RequestSnapshot(BaseModel):
+src/hcx_eval/schemas/results.py:55: in RequestSnapshot
+    @field_serializer("payload", "headers")
+     ^^^^^^^^^^^^^^^^
+E   NameError: name 'field_serializer' is not defined
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+tests/unit/test_artifacts.py:9: in <module>
+    from hcx_eval.schemas.results import (
+src/hcx_eval/schemas/__init__.py:6: in <module>
+    from hcx_eval.schemas.results import RawResult
+src/hcx_eval/schemas/results.py:35: in <module>
+    class RequestSnapshot(BaseModel):
+src/hcx_eval/schemas/results.py:55: in RequestSnapshot
+    @field_serializer("payload", "headers")
+     ^^^^^^^^^^^^^^^^
+E   NameError: name 'field_serializer' is not defined
+=========================== short test summary info ============================
+ERROR tests/unit/test_schemas.py - NameError: name 'field_serializer' is not ...
+ERROR tests/unit/test_artifacts.py - NameError: name 'field_serializer' is no...
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.24s

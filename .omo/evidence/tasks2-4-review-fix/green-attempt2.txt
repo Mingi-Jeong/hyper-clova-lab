@@ -1,0 +1,165 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/unit/test_schemas.py __________________
+tests/unit/test_schemas.py:6: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/__init__.py:3: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/case.py:17: in <module>
+    class EvaluationCase(BaseModel):
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:256: in __new__
+    complete_model_class(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:667: in complete_model_class
+    schema = gen_schema.generate_schema(cls)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1038: in _generate_schema_inner
+    return self._model_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in <dictcomp>
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1245: in _generate_md_field_schema
+    schema, metadata = self._common_field_schema(name, field_info, decorators)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1299: in _common_field_schema
+    schema = self._apply_annotations(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2252: in _apply_annotations
+    schema = get_inner_schema(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2423: in new_handler
+    schema = annotation_get_schema(source, get_inner_schema)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/functional_validators.py:127: in __get_pydantic_core_schema__
+    schema = handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2231: in inner_handler
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1157: in match_type
+    return self._dataclass_schema(obj, None)  # pyright: ignore[reportArgumentType]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1894: in _dataclass_schema
+    fields = collect_dataclass_fields(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_fields.py:569: in collect_dataclass_fields
+    ann_type, evaluated = _typing_extra.try_eval_type(dataclass_field.type, globalns, localns)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:423: in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:474: in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:511: in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:564: in _eval_type
+    return typing._eval_type(  # type: ignore
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/typing.py:395: in _eval_type
+    return t._evaluate(globalns, localns, recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/typing.py:905: in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:1: in <module>
+    ???
+E   TypeError: unsupported operand type(s) for |: 'types.UnionType' and 'str'
+E   Unable to evaluate type annotation "JsonScalar | tuple['FrozenJson', ...] | 'FrozenDict'".
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+tests/unit/test_artifacts.py:9: in <module>
+    from hcx_eval.schemas.results import (
+src/hcx_eval/schemas/__init__.py:3: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/case.py:17: in <module>
+    class EvaluationCase(BaseModel):
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:256: in __new__
+    complete_model_class(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:667: in complete_model_class
+    schema = gen_schema.generate_schema(cls)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1038: in _generate_schema_inner
+    return self._model_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in <dictcomp>
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1245: in _generate_md_field_schema
+    schema, metadata = self._common_field_schema(name, field_info, decorators)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1299: in _common_field_schema
+    schema = self._apply_annotations(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2252: in _apply_annotations
+    schema = get_inner_schema(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2423: in new_handler
+    schema = annotation_get_schema(source, get_inner_schema)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/functional_validators.py:127: in __get_pydantic_core_schema__
+    schema = handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2231: in inner_handler
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1157: in match_type
+    return self._dataclass_schema(obj, None)  # pyright: ignore[reportArgumentType]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1894: in _dataclass_schema
+    fields = collect_dataclass_fields(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_fields.py:569: in collect_dataclass_fields
+    ann_type, evaluated = _typing_extra.try_eval_type(dataclass_field.type, globalns, localns)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:423: in try_eval_type
+    return eval_type_backport(value, globalns, localns), True
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:474: in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:511: in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:564: in _eval_type
+    return typing._eval_type(  # type: ignore
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/typing.py:395: in _eval_type
+    return t._evaluate(globalns, localns, recursive_guard)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/typing.py:905: in _evaluate
+    eval(self.__forward_code__, globalns, localns),
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<string>:1: in <module>
+    ???
+E   TypeError: unsupported operand type(s) for |: 'types.UnionType' and 'str'
+E   Unable to evaluate type annotation "JsonScalar | tuple['FrozenJson', ...] | 'FrozenDict'".
+=========================== short test summary info ============================
+ERROR tests/unit/test_schemas.py - TypeError: unsupported operand type(s) for...
+ERROR tests/unit/test_artifacts.py - TypeError: unsupported operand type(s) f...
+!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!
+2 errors in 0.91s

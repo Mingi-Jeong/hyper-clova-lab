@@ -1,0 +1,34 @@
+TRY004 Prefer `TypeError` exception for invalid type
+  --> src/hcx_eval/schemas/case.py:44:13
+   |
+42 |         if not isinstance(value, dict):
+43 |             message = "case metadata must be a JSON object"
+44 |             raise ValueError(message)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+45 |         return freeze_mapping(value)
+   |
+
+TRY004 Prefer `TypeError` exception for invalid type
+  --> src/hcx_eval/schemas/results.py:53:13
+   |
+51 |         if not isinstance(redacted, dict):
+52 |             message = "request payload and headers must be JSON objects"
+53 |             raise ValueError(message)
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^
+54 |         return freeze_mapping(redacted)
+   |
+
+TC002 Move third-party import `pydantic.JsonValue` into a type-checking block
+  --> src/hcx_eval/security.py:10:22
+   |
+ 8 | from typing import Final, TypeAlias
+ 9 |
+10 | from pydantic import JsonValue
+   |                      ^^^^^^^^^
+11 |
+12 | REDACTED: Final = "[REDACTED]"
+   |
+help: Move into type-checking block
+
+Found 3 errors.
+No fixes available (1 hidden fix can be enabled with the `--unsafe-fixes` option).

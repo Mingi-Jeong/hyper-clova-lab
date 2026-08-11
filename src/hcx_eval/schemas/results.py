@@ -9,11 +9,19 @@ from pydantic import (
     ConfigDict,
     Field,
     JsonValue,
+    field_serializer,
     field_validator,
     model_validator,
 )
 
-from hcx_eval.security import redact
+from hcx_eval.security import (
+    FrozenDict,
+    FrozenJson,
+    freeze_json,
+    freeze_mapping,
+    redact,
+    redact_text,
+)
 
 
 class ApiFamily(StrEnum):
@@ -28,16 +36,27 @@ class ApiFamily(StrEnum):
 class RequestSnapshot(BaseModel):
     """Persistable request content after recursive secret redaction."""
 
-    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
+    model_config: ClassVar[ConfigDict] = ConfigDict(
+        arbitrary_types_allowed=True, frozen=True, extra="forbid"
+    )
 
-    payload: dict[str, JsonValue]
-    headers: dict[str, JsonValue] = Field(default_factory=dict)
+    payload: FrozenDict
+    headers: FrozenDict = Field(default_factory=FrozenDict)
 
     @field_validator("payload", "headers", mode="before")
     @classmethod
-    def redact_secrets(cls, value: JsonValue) -> JsonValue:
+    def redact_secrets(cls, value: JsonValue) -> FrozenDict:
         """Redact request secrets before model construction."""
-        return redact(value)
+        redacted = redact(value)
+        if not isinstance(redacted, dict):
+            message = "request payload and headers must be JSON objects"
+            raise TypeError(message)
+        return freeze_mapping(redacted)
+
+    @field_serializer("payload", "headers")
+    def serialize_mapping(self, value: FrozenDict) -> dict[str, JsonValue]:
+        """Thaw immutable request mappings into detached JSON objects."""
+        return value.to_json()
 
 
 class ErrorDetail(BaseModel):
@@ -49,6 +68,12 @@ class ErrorDetail(BaseModel):
     message: str = Field(min_length=1)
     retryable: bool = False
     provider_code: str | None = None
+
+    @field_validator("message", mode="before")
+    @classmethod
+    def redact_message(cls, value: str) -> str:
+        """Mask credential substrings in persisted error text."""
+        return redact_text(value)
 
 
 class Timing(BaseModel):
@@ -114,7 +139,7 @@ class RawResult(BaseModel):
     dataset_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     docs_snapshot_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     request: RequestSnapshot
-    response_raw: JsonValue = None
+    response_raw: FrozenJson = Field(default_factory=lambda: freeze_json(None))
     response_text: str | None = None
     timing: Timing
     usage: Usage | None = None
@@ -128,6 +153,17 @@ class RawResult(BaseModel):
 
     @field_validator("response_raw", mode="before")
     @classmethod
-    def redact_response(cls, value: JsonValue) -> JsonValue:
+    def redact_response(cls, value: JsonValue) -> FrozenJson:
         """Redact response secrets before model construction."""
-        return redact(value)
+        return freeze_json(redact(value))
+
+    @field_validator("response_text", mode="before")
+    @classmethod
+    def redact_response_text(cls, value: str | None) -> str | None:
+        """Mask credential substrings in persisted response text."""
+        return None if value is None else redact_text(value)
+
+    @field_serializer("response_raw")
+    def serialize_response(self, value: FrozenJson) -> JsonValue:
+        """Thaw the immutable provider response into detached JSON."""
+        return value.to_json()

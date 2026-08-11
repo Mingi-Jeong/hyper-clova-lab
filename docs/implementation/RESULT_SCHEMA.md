@@ -19,3 +19,8 @@ Artifact roots and run IDs are validated before directories are created. Paths m
 not resolve beneath `processed-data/`, the collected NAVER documentation root, or
 `.hermes/`. Secrets, API-key-like fields, bearer authorization values, cookies, and
 token fields are recursively replaced with `[REDACTED]` before persistence.
+Bearer credentials embedded in response/error text and CLI credentials in both
+`--option=value` and `--option value` forms are masked without removing surrounding
+evaluation content. JSON mappings and lists are defensively copied into immutable
+tuple-backed values at validation, then thawed into detached JSON only during
+serialization.

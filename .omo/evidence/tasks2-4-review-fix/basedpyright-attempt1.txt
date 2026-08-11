@@ -1,0 +1,10 @@
+/home/workspace/hyper-clova-lab/src/hcx_eval/security.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/security.py:94:5 - error: "items" overrides method of same name in class "Mapping" with incompatible type "tuple[tuple[str, FrozenJson], ...]" (reportIncompatibleMethodOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/security.py:96:9 - error: Method "__getitem__" is not marked as override but is overriding a method in class "Mapping[str, FrozenJson]" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/security.py:103:9 - error: Method "__iter__" is not marked as override but is overriding a method in class "Iterable[str]" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/security.py:107:9 - error: Method "__len__" is not marked as override but is overriding a method in class "Collection[str]" (reportImplicitOverride)
+/home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:129:5 - error: Type of "persisted" is Any (reportAny)
+/home/workspace/hyper-clova-lab/tests/unit/test_schemas.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_schemas.py:110:5 - error: Type of "serialized" is Any (reportAny)
+6 errors, 0 warnings, 0 notes

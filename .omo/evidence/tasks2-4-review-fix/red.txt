@@ -1,0 +1,16 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/unit/test_security.py _________________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_security.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_security.py:5: in <module>
+    from hcx_eval.security import REDACTED, redact, redact_text
+E   ImportError: cannot import name 'redact_text' from 'hcx_eval.security' (/home/workspace/hyper-clova-lab/src/hcx_eval/security.py)
+=========================== short test summary info ============================
+ERROR tests/unit/test_security.py
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.24s

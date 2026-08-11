@@ -1,9 +1,17 @@
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from pydantic import BaseModel
+from pydantic import BaseModel, JsonValue, TypeAdapter
 
 from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+from hcx_eval.schemas.results import (
+    ApiFamily,
+    ErrorDetail,
+    RawResult,
+    RequestSnapshot,
+    Timing,
+)
 
 
 class FixtureManifest(BaseModel):
@@ -92,3 +100,35 @@ def test_writer_rejects_protected_or_traversing_targets(
     # Given / When / Then: artifact destinations cannot enter protected inputs.
     with pytest.raises(ArtifactError):
         _ = SegmentedJsonlWriter(root, run_id)
+
+
+def test_writer_redacts_raw_result_free_text_before_persistence(
+    tmp_path: Path,
+) -> None:
+    # Given: a raw result with secrets in response and error free text.
+    result = RawResult(
+        run_id="run-1",
+        request_id="request-1",
+        case_id="case-1",
+        model="HCX-005",
+        api_family=ApiFamily.NATIVE_V3,
+        prompt_version="v1",
+        dataset_sha256="a" * 64,
+        docs_snapshot_sha256="b" * 64,
+        request=RequestSnapshot.model_validate({"payload": {"messages": []}}),
+        response_text="answer before Bearer response-secret after",
+        timing=Timing(started_at=datetime.now(UTC), e2e_ms=1),
+        error=ErrorDetail(kind="provider", message="failed Bearer error-secret safely"),
+    )
+
+    # When: the raw result is appended through the real artifact writer.
+    path = SegmentedJsonlWriter(tmp_path, "run-1").append(result)
+    persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
+
+    # Then: ordinary evidence remains but neither secret reaches disk.
+    assert persisted["response_text"] == ("answer before Bearer [REDACTED] after")
+    persisted_error = persisted["error"]
+    assert isinstance(persisted_error, dict)
+    assert persisted_error["message"] == ("failed Bearer [REDACTED] safely")
+    assert "response-secret" not in path.read_text()
+    assert "error-secret" not in path.read_text()

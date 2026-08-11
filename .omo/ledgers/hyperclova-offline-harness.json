@@ -17,7 +17,8 @@
   "task_4": {
     "status": "completed",
     "scope": "immutable shared schemas, deterministic IDs, and append-only artifacts",
-    "evidence": ".omo/evidence/tasks2-4/"
+    "evidence": ".omo/evidence/tasks2-4/ and .omo/evidence/tasks2-4-review-fix/",
+    "review_fix": "deep-frozen nested JSON and free-text/CLI credential redaction"
   },
   "next_task": 5
 }

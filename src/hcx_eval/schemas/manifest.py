@@ -6,6 +6,7 @@ from typing import ClassVar
 from pydantic import BaseModel, ConfigDict, Field, SecretStr, field_serializer
 
 from hcx_eval.schemas.model import ModelRecord
+from hcx_eval.security import redact_cli_invocation
 
 
 class RunManifest(BaseModel):
@@ -34,16 +35,4 @@ class RunManifest(BaseModel):
     @field_serializer("invocation")
     def serialize_invocation(self, invocation: str) -> str:
         """Mask credential-bearing command arguments."""
-        parts = invocation.split()
-        redacted: list[str] = []
-        mask_next = False
-        for part in parts:
-            if mask_next:
-                redacted.append("[REDACTED]")
-                mask_next = False
-            elif part.casefold() in {"--api-key", "--authorization"}:
-                redacted.append(part)
-                mask_next = True
-            else:
-                redacted.append(part)
-        return " ".join(redacted)
+        return redact_cli_invocation(invocation)

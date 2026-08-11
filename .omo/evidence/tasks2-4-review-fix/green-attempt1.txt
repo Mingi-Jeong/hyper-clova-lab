@@ -1,0 +1,43 @@
+
+==================================== ERRORS ====================================
+_________________ ERROR collecting tests/unit/test_security.py _________________
+tests/unit/test_security.py:5: in <module>
+    from hcx_eval.security import REDACTED, redact, redact_text
+src/hcx_eval/security.py:72: in <module>
+    class FrozenJson:
+src/hcx_eval/security.py:75: in FrozenJson
+    value: JsonScalar | tuple["FrozenJson", ...] | "FrozenDict"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unsupported operand type(s) for |: 'types.UnionType' and 'str'
+_________________ ERROR collecting tests/unit/test_schemas.py __________________
+tests/unit/test_schemas.py:6: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/__init__.py:3: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/case.py:14: in <module>
+    from hcx_eval.security import FrozenDict, FrozenJson, freeze_json, freeze_mapping
+src/hcx_eval/security.py:72: in <module>
+    class FrozenJson:
+src/hcx_eval/security.py:75: in FrozenJson
+    value: JsonScalar | tuple["FrozenJson", ...] | "FrozenDict"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unsupported operand type(s) for |: 'types.UnionType' and 'str'
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+tests/unit/test_artifacts.py:8: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/__init__.py:3: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/writer.py:19: in <module>
+    from hcx_eval.security import redact_mapping
+src/hcx_eval/security.py:72: in <module>
+    class FrozenJson:
+src/hcx_eval/security.py:75: in FrozenJson
+    value: JsonScalar | tuple["FrozenJson", ...] | "FrozenDict"
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   TypeError: unsupported operand type(s) for |: 'types.UnionType' and 'str'
+=========================== short test summary info ============================
+ERROR tests/unit/test_security.py - TypeError: unsupported operand type(s) fo...
+ERROR tests/unit/test_schemas.py - TypeError: unsupported operand type(s) for...
+ERROR tests/unit/test_artifacts.py - TypeError: unsupported operand type(s) f...
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+3 errors in 0.23s

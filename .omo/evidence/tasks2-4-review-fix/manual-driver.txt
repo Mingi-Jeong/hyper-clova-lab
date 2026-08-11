@@ -1,0 +1,11 @@
+{
+  "nested_source_detached": true,
+  "nested_mutation_rejected": true,
+  "raw_result_secrets_absent": true,
+  "ordinary_content_preserved": true,
+  "manifest_invocation": "hcx --api-key=[REDACTED] --authorization [REDACTED] run",
+  "logging_fields": {
+    "event": "request.failed",
+    "detail": "context Bearer [REDACTED] retained"
+  }
+}
