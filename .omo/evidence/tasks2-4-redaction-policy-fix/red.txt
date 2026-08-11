@@ -1,0 +1,331 @@
+.....FFFF..............FFFF.........                                     [100%]
+=================================== FAILURES ===================================
+_____ test_writer_uses_canonical_sensitive_policy_for_assignments[AUTH--;] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_writer_uses_canonical_sen5')
+key = 'AUTH', quote = '', delimiter = ';'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_writer_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive key in mapping and assignment forms.
+        secret = "private value" if quote else "private-value"
+        assignment = f"{key}={quote}{secret}{quote}{delimiter}"
+        record: dict[str, JsonValue] = {
+            "request_id": f"request-{key}",
+            key: secret,
+            "response_text": (
+                f"keep {assignment} prose api_key remains "
+                "score=0.7 token_count=5 secretary=visible"
+            ),
+        }
+
+        # When: the record crosses the actual append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(record)
+        persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
+        response_text = persisted["response_text"]
+
+        # Then: both forms redact consistently without consuming ordinary content.
+>       assert persisted[key] == "[REDACTED]"
+E       AssertionError: assert 'private-value' == '[REDACTED]'
+E
+E         - [REDACTED]
+E         + private-value
+
+tests/unit/test_artifacts.py:182: AssertionError
+_ test_writer_uses_canonical_sensitive_policy_for_assignments[Cookie-'-&next=visible] _
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_writer_uses_canonical_sen6')
+key = 'Cookie', quote = "'", delimiter = '&next=visible'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_writer_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive key in mapping and assignment forms.
+        secret = "private value" if quote else "private-value"
+        assignment = f"{key}={quote}{secret}{quote}{delimiter}"
+        record: dict[str, JsonValue] = {
+            "request_id": f"request-{key}",
+            key: secret,
+            "response_text": (
+                f"keep {assignment} prose api_key remains "
+                "score=0.7 token_count=5 secretary=visible"
+            ),
+        }
+
+        # When: the record crosses the actual append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(record)
+        persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
+        response_text = persisted["response_text"]
+
+        # Then: both forms redact consistently without consuming ordinary content.
+        assert persisted[key] == "[REDACTED]"
+        assert isinstance(response_text, str)
+>       assert secret not in path.read_text()
+E       assert 'private value' not in '{"Cookie":"...=visible"}\n'
+E
+E         'private value' is contained here:
+E           p Cookie='private value'&next=visible prose api_key remains score=0.7 token_count=5 secretary=visible"}
+E         ?           +++++++++++++
+
+tests/unit/test_artifacts.py:184: AssertionError
+___ test_writer_uses_canonical_sensitive_policy_for_assignments[COOKIES-"-.] ___
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_writer_uses_canonical_sen7')
+key = 'COOKIES', quote = '"', delimiter = '.'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_writer_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive key in mapping and assignment forms.
+        secret = "private value" if quote else "private-value"
+        assignment = f"{key}={quote}{secret}{quote}{delimiter}"
+        record: dict[str, JsonValue] = {
+            "request_id": f"request-{key}",
+            key: secret,
+            "response_text": (
+                f"keep {assignment} prose api_key remains "
+                "score=0.7 token_count=5 secretary=visible"
+            ),
+        }
+
+        # When: the record crosses the actual append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(record)
+        persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
+        response_text = persisted["response_text"]
+
+        # Then: both forms redact consistently without consuming ordinary content.
+>       assert persisted[key] == "[REDACTED]"
+E       AssertionError: assert 'private value' == '[REDACTED]'
+E
+E         - [REDACTED]
+E         + private value
+
+tests/unit/test_artifacts.py:182: AssertionError
+__ test_writer_uses_canonical_sensitive_policy_for_assignments[Set-Cookie--,] __
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_writer_uses_canonical_sen8')
+key = 'Set-Cookie', quote = '', delimiter = ','
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_writer_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive key in mapping and assignment forms.
+        secret = "private value" if quote else "private-value"
+        assignment = f"{key}={quote}{secret}{quote}{delimiter}"
+        record: dict[str, JsonValue] = {
+            "request_id": f"request-{key}",
+            key: secret,
+            "response_text": (
+                f"keep {assignment} prose api_key remains "
+                "score=0.7 token_count=5 secretary=visible"
+            ),
+        }
+
+        # When: the record crosses the actual append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(record)
+        persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
+        response_text = persisted["response_text"]
+
+        # Then: both forms redact consistently without consuming ordinary content.
+>       assert persisted[key] == "[REDACTED]"
+E       AssertionError: assert 'private-value' == '[REDACTED]'
+E
+E         - [REDACTED]
+E         + private-value
+
+tests/unit/test_artifacts.py:182: AssertionError
+____ test_manifest_uses_canonical_sensitive_policy_for_assignments[AUTH--;] ____
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_manifest_uses_canonical_s5')
+key = 'AUTH', quote = '', delimiter = ';'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_manifest_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive assignment in a real manifest invocation.
+        secret = "manifest value" if quote else "manifest-value"
+        manifest = RunManifest(
+            run_id="run-1",
+            created_at=datetime.now(UTC),
+            git_commit_sha="commit",
+            git_dirty=False,
+            python_version="3.11",
+            dependency_versions=(),
+            model_registry=(),
+            config_sha256="a" * 64,
+            dataset_sha256="b" * 64,
+            docs_snapshot_sha256="c" * 64,
+            max_requests=1,
+            max_tokens=1,
+            max_concurrency=1,
+            invocation=(
+                f"{key}={quote}{secret}{quote}{delimiter} "
+                "hcx run score=0.7 token_count=5 secretary=visible"
+            ),
+        )
+
+        # When: the manifest crosses the actual create-once writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+        text = path.read_text()
+
+        # Then: it redacts without consuming delimiters or ordinary assignments.
+>       assert secret not in text
+E       assert 'manifest-value' not in '{\n  "run_i...isible"\n}\n'
+E
+E         'manifest-value' is contained here:
+E           n": "AUTH=manifest-value; hcx run score=0.7 token_count=5 secretary=visible"
+E         ?           ++++++++++++++
+E           }
+
+tests/unit/test_artifacts.py:222: AssertionError
+_ test_manifest_uses_canonical_sensitive_policy_for_assignments[Cookie-'-&next=visible] _
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_manifest_uses_canonical_s6')
+key = 'Cookie', quote = "'", delimiter = '&next=visible'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_manifest_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive assignment in a real manifest invocation.
+        secret = "manifest value" if quote else "manifest-value"
+        manifest = RunManifest(
+            run_id="run-1",
+            created_at=datetime.now(UTC),
+            git_commit_sha="commit",
+            git_dirty=False,
+            python_version="3.11",
+            dependency_versions=(),
+            model_registry=(),
+            config_sha256="a" * 64,
+            dataset_sha256="b" * 64,
+            docs_snapshot_sha256="c" * 64,
+            max_requests=1,
+            max_tokens=1,
+            max_concurrency=1,
+            invocation=(
+                f"{key}={quote}{secret}{quote}{delimiter} "
+                "hcx run score=0.7 token_count=5 secretary=visible"
+            ),
+        )
+
+        # When: the manifest crosses the actual create-once writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+        text = path.read_text()
+
+        # Then: it redacts without consuming delimiters or ordinary assignments.
+>       assert secret not in text
+E       assert 'manifest value' not in '{\n  "run_i...isible"\n}\n'
+E
+E         'manifest value' is contained here:
+E           : "Cookie=manifest value&next=visible hcx run score=0.7 token_count=5 secretary=visible"
+E         ?           ++++++++++++++
+E           }
+
+tests/unit/test_artifacts.py:222: AssertionError
+__ test_manifest_uses_canonical_sensitive_policy_for_assignments[COOKIES-"-.] __
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_manifest_uses_canonical_s7')
+key = 'COOKIES', quote = '"', delimiter = '.'
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_manifest_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive assignment in a real manifest invocation.
+        secret = "manifest value" if quote else "manifest-value"
+        manifest = RunManifest(
+            run_id="run-1",
+            created_at=datetime.now(UTC),
+            git_commit_sha="commit",
+            git_dirty=False,
+            python_version="3.11",
+            dependency_versions=(),
+            model_registry=(),
+            config_sha256="a" * 64,
+            dataset_sha256="b" * 64,
+            docs_snapshot_sha256="c" * 64,
+            max_requests=1,
+            max_tokens=1,
+            max_concurrency=1,
+            invocation=(
+                f"{key}={quote}{secret}{quote}{delimiter} "
+                "hcx run score=0.7 token_count=5 secretary=visible"
+            ),
+        )
+
+        # When: the manifest crosses the actual create-once writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+        text = path.read_text()
+
+        # Then: it redacts without consuming delimiters or ordinary assignments.
+>       assert secret not in text
+E       assert 'manifest value' not in '{\n  "run_i...isible"\n}\n'
+E
+E         'manifest value' is contained here:
+E            "COOKIES=manifest value. hcx run score=0.7 token_count=5 secretary=visible"
+E         ?           ++++++++++++++
+E           }
+
+tests/unit/test_artifacts.py:222: AssertionError
+_ test_manifest_uses_canonical_sensitive_policy_for_assignments[Set-Cookie--,] _
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-61/test_manifest_uses_canonical_s8')
+key = 'Set-Cookie', quote = '', delimiter = ','
+
+    @pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+    def test_manifest_uses_canonical_sensitive_policy_for_assignments(
+        tmp_path: Path, key: str, quote: str, delimiter: str
+    ) -> None:
+        # Given: one canonical sensitive assignment in a real manifest invocation.
+        secret = "manifest value" if quote else "manifest-value"
+        manifest = RunManifest(
+            run_id="run-1",
+            created_at=datetime.now(UTC),
+            git_commit_sha="commit",
+            git_dirty=False,
+            python_version="3.11",
+            dependency_versions=(),
+            model_registry=(),
+            config_sha256="a" * 64,
+            dataset_sha256="b" * 64,
+            docs_snapshot_sha256="c" * 64,
+            max_requests=1,
+            max_tokens=1,
+            max_concurrency=1,
+            invocation=(
+                f"{key}={quote}{secret}{quote}{delimiter} "
+                "hcx run score=0.7 token_count=5 secretary=visible"
+            ),
+        )
+
+        # When: the manifest crosses the actual create-once writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+        text = path.read_text()
+
+        # Then: it redacts without consuming delimiters or ordinary assignments.
+>       assert secret not in text
+E       assert 'manifest-value' not in '{\n  "run_i...isible"\n}\n'
+E
+E         'manifest-value' is contained here:
+E           et-Cookie=manifest-value, hcx run score=0.7 token_count=5 secretary=visible"
+E         ?           ++++++++++++++
+E           }
+
+tests/unit/test_artifacts.py:222: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_artifacts.py::test_writer_uses_canonical_sensitive_policy_for_assignments[AUTH--;]
+FAILED tests/unit/test_artifacts.py::test_writer_uses_canonical_sensitive_policy_for_assignments[Cookie-'-&next=visible]
+FAILED tests/unit/test_artifacts.py::test_writer_uses_canonical_sensitive_policy_for_assignments[COOKIES-"-.]
+FAILED tests/unit/test_artifacts.py::test_writer_uses_canonical_sensitive_policy_for_assignments[Set-Cookie--,]
+FAILED tests/unit/test_artifacts.py::test_manifest_uses_canonical_sensitive_policy_for_assignments[AUTH--;]
+FAILED tests/unit/test_artifacts.py::test_manifest_uses_canonical_sensitive_policy_for_assignments[Cookie-'-&next=visible]
+FAILED tests/unit/test_artifacts.py::test_manifest_uses_canonical_sensitive_policy_for_assignments[COOKIES-"-.]
+FAILED tests/unit/test_artifacts.py::test_manifest_uses_canonical_sensitive_policy_for_assignments[Set-Cookie--,]
+8 failed, 28 passed, 7 deselected in 0.42s

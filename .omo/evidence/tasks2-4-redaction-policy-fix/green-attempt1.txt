@@ -1,0 +1,37 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+tests/unit/test_artifacts.py:7: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/__init__.py:3: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/writer.py:19: in <module>
+    from hcx_eval.security import redact_mapping
+src/hcx_eval/security.py:42: in <module>
+    _ASSIGNMENT_PATTERN: Final = re.compile(
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/__init__.py:227: in compile
+    return _compile(pattern, flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/__init__.py:294: in _compile
+    p = _compiler.compile(pattern, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_compiler.py:745: in compile
+    p = _parser.parse(p, flags)
+        ^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_parser.py:989: in parse
+    p = _parse_sub(source, state, flags & SRE_FLAG_VERBOSE, 0)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_parser.py:464: in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_parser.py:872: in _parse
+    p = _parse_sub(source, state, sub_verbose, nested + 1)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_parser.py:464: in _parse_sub
+    itemsappend(_parse(source, state, verbose, nested + 1,
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/re/_parser.py:867: in _parse
+    raise source.error(err.msg, len(name) + 1) from None
+E   re.error: redefinition of group name 'secret' as group 5; was group 4 at position 137
+=========================== short test summary info ============================
+ERROR tests/unit/test_artifacts.py - re.error: redefinition of group name 'se...
+!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!
+1 error in 0.29s

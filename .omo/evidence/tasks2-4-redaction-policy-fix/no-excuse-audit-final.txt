@@ -1,0 +1,6 @@
+/home/workspace/hyper-clova-lab/src/hcx_eval/security.py:95:5: [missing-assert-never] match without `case _: assert_never(x)` default
+/home/workspace/hyper-clova-lab/src/hcx_eval/security.py:165:5: [missing-assert-never] match without `case _: assert_never(x)` default
+/home/workspace/hyper-clova-lab/src/hcx_eval/security.py:125:9: [missing-assert-never] match without `case _: assert_never(x)` default
+
+3 violation(s) in 2 file(s)
+audit_exit=1

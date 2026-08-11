@@ -1,5 +1,6 @@
 from datetime import UTC, datetime
 from pathlib import Path
+from typing import Final
 
 import pytest
 from pydantic import BaseModel, JsonValue, TypeAdapter
@@ -135,49 +136,65 @@ def test_writer_redacts_raw_result_free_text_before_persistence(
     assert "error-secret" not in path.read_text()
 
 
-def test_writer_redacts_sensitive_assignments_and_preserves_delimiters(
-    tmp_path: Path,
-) -> None:
-    # Given: quoted and bare assignments surrounded by useful evaluation prose.
-    result = RawResult(
-        run_id="run-1",
-        request_id="request-1",
-        case_id="case-1",
-        model="HCX-005",
-        api_family=ApiFamily.NATIVE_V3,
-        prompt_version="v1",
-        dataset_sha256="a" * 64,
-        docs_snapshot_sha256="b" * 64,
-        request=RequestSnapshot.model_validate({"payload": {"messages": []}}),
-        response_text=(
-            "keep CLOVA_STUDIO_API_KEY='env secret', "
-            'Api_Key="generic secret"; token=token-secret&next=visible '
-            "password=pass-secret. prose api_key remains"
-        ),
-        timing=Timing(started_at=datetime.now(UTC), e2e_ms=1),
-    )
+SENSITIVE_ASSIGNMENT_CASES: Final = (
+    ("API_KEY", "'", ","),
+    ("api-key", '"', ";"),
+    ("apikey", "", "&next=visible"),
+    ("ClOvA_StUdIo_ApI_KeY", "'", "."),
+    ("Authorization", '"', ","),
+    ("AUTH", "", ";"),
+    ("Cookie", "'", "&next=visible"),
+    ("COOKIES", '"', "."),
+    ("Set-Cookie", "", ","),
+    ("Credential", "'", ";"),
+    ("CREDENTIALS", '"', "&next=visible"),
+    ("Secret", "", "."),
+    ("CLIENT_SECRET", "'", ","),
+    ("Token", '"', ";"),
+    ("ACCESS_TOKEN", "", "&next=visible"),
+    ("refresh-token", "'", "."),
+    ("Password", '"', ","),
+    ("DB_PASSWORD", "", ";"),
+)
 
-    # When: the result crosses the append-only writer boundary.
-    path = SegmentedJsonlWriter(tmp_path, "run-1").append(result)
-    text = path.read_text()
-    persisted = TypeAdapter(dict[str, JsonValue]).validate_json(text)
+
+@pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+def test_writer_uses_canonical_sensitive_policy_for_assignments(
+    tmp_path: Path, key: str, quote: str, delimiter: str
+) -> None:
+    # Given: one canonical sensitive key in mapping and assignment forms.
+    secret = "private value" if quote else "private-value"
+    assignment = f"{key}={quote}{secret}{quote}{delimiter}"
+    record: dict[str, JsonValue] = {
+        "request_id": f"request-{key}",
+        key: secret,
+        "response_text": (
+            f"keep {assignment} prose api_key remains "
+            "score=0.7 token_count=5 secretary=visible"
+        ),
+    }
+
+    # When: the record crosses the actual append-only writer boundary.
+    path = SegmentedJsonlWriter(tmp_path, "run-1").append(record)
+    persisted = TypeAdapter(dict[str, JsonValue]).validate_json(path.read_bytes())
     response_text = persisted["response_text"]
 
-    # Then: secret values vanish while quotes, delimiters, and prose remain.
+    # Then: both forms redact consistently without consuming ordinary content.
+    assert persisted[key] == "[REDACTED]"
     assert isinstance(response_text, str)
-    assert "env secret" not in text
-    assert "generic secret" not in text
-    assert "token-secret" not in text
-    assert "pass-secret" not in text
-    assert "CLOVA_STUDIO_API_KEY='[REDACTED]'," in response_text
-    assert 'Api_Key="[REDACTED]";' in response_text
-    assert "token=[REDACTED]&next=visible" in response_text
-    assert "password=[REDACTED]. prose api_key remains" in response_text
-    assert '"inter_token_gap_p95_ms":null' in text
+    assert secret not in path.read_text()
+    assert f"{key}={quote}[REDACTED]{quote}{delimiter}" in response_text
+    assert response_text.endswith(
+        "prose api_key remains score=0.7 token_count=5 secretary=visible"
+    )
 
 
-def test_writer_redacts_assignment_secrets_in_manifest(tmp_path: Path) -> None:
-    # Given: a manifest invocation with env, generic, and CLI credentials.
+@pytest.mark.parametrize(("key", "quote", "delimiter"), SENSITIVE_ASSIGNMENT_CASES)
+def test_manifest_uses_canonical_sensitive_policy_for_assignments(
+    tmp_path: Path, key: str, quote: str, delimiter: str
+) -> None:
+    # Given: one canonical sensitive assignment in a real manifest invocation.
+    secret = "manifest value" if quote else "manifest-value"
     manifest = RunManifest(
         run_id="run-1",
         created_at=datetime.now(UTC),
@@ -193,19 +210,18 @@ def test_writer_redacts_assignment_secrets_in_manifest(tmp_path: Path) -> None:
         max_tokens=1,
         max_concurrency=1,
         invocation=(
-            "CloVa_Studio_Api_Key='env secret' token=token-secret "
-            "hcx --authorization=auth-secret run"
+            f"{key}={quote}{secret}{quote}{delimiter} "
+            "hcx run score=0.7 token_count=5 secretary=visible"
         ),
     )
 
-    # When: the manifest is persisted through the real writer.
+    # When: the manifest crosses the actual create-once writer boundary.
     path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
     text = path.read_text()
 
-    # Then: no assignment value reaches disk and command structure remains.
-    assert all(
-        secret not in text for secret in ("env secret", "token-secret", "auth-secret")
-    )
-    assert "CloVa_Studio_Api_Key=[REDACTED]" in text
-    assert "token=[REDACTED]" in text
-    assert "--authorization=[REDACTED]" in text
+    # Then: it redacts without consuming delimiters or ordinary assignments.
+    assert secret not in text
+    assert f"{key}=[REDACTED]{delimiter}" in text
+    invocation = TypeAdapter(dict[str, JsonValue]).validate_json(text)["invocation"]
+    assert isinstance(invocation, str)
+    assert "hcx run score=0.7 token_count=5 secretary=visible" in invocation

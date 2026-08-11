@@ -14,43 +14,33 @@ if TYPE_CHECKING:
     from pydantic import JsonValue
 
 REDACTED: Final = "[REDACTED]"
-_SENSITIVE_KEYS: Final = {
-    "authorization",
-    "cookie",
-    "credential",
-    "credentials",
-    "password",
-    "secret",
-    "token",
-}
-_SENSITIVE_SUFFIXES: Final = (
-    "_api_key",
-    "_credential",
-    "_credentials",
-    "_password",
-    "_secret",
-    "_token",
+_SENSITIVE_KEY_LEAVES: Final = frozenset(
+    {
+        "api_key",
+        "auth",
+        "authorization",
+        "cookie",
+        "cookies",
+        "credential",
+        "credentials",
+        "password",
+        "secret",
+        "token",
+    }
 )
 _BEARER_PATTERN: Final = re.compile(r"\bbearer\s+\S+", re.IGNORECASE)
 _CLI_EQUALS_PATTERN: Final = re.compile(
     r"(?P<option>--(?:api-key|authorization))=(?P<secret>\S+)", re.IGNORECASE
 )
-_ASSIGNMENT_KEY: Final = (
-    r"(?<![\w-])(?:[A-Za-z0-9]+[_-])*(?:api[_-]?key|authorization|token|"
-    r"password|secret|credentials?)"
-)
-_ASSIGNMENT_PREFIX: Final = rf"(?P<key>{_ASSIGNMENT_KEY})(?P<separator>\s*=\s*)"
-_QUOTED_ASSIGNMENT_SUFFIX: Final = r"(?P<quote>['\"])(?P<secret>.*?)(?P=quote)"
-_BARE_ASSIGNMENT_GUARD: Final = rf"(?!['\"])(?!{re.escape(REDACTED)})"
+_ASSIGNMENT_KEY: Final = r"(?<![\w-])(?P<key>[A-Za-z][A-Za-z0-9_-]*)"
+_ASSIGNMENT_PREFIX: Final = rf"{_ASSIGNMENT_KEY}(?P<separator>\s*=\s*)"
+_QUOTED_ASSIGNMENT_VALUE: Final = r"(?P<quote>['\"])(.*?)(?P=quote)"
 _BARE_ASSIGNMENT_VALUE: Final = (
-    r"(?P<secret>[^\s,;&)\]}]+?)(?=(?:[,;&)\]}]|\.(?:\s|$)|\s|$))"
+    rf"(?!['\"])(?!{re.escape(REDACTED)})"
+    r"[^\s,;&)\]}]+?(?=(?:[,;&)\]}]|\.(?:\s|$)|\s|$))"
 )
-_QUOTED_ASSIGNMENT_PATTERN: Final = re.compile(
-    _ASSIGNMENT_PREFIX + _QUOTED_ASSIGNMENT_SUFFIX,
-    re.IGNORECASE,
-)
-_BARE_ASSIGNMENT_PATTERN: Final = re.compile(
-    _ASSIGNMENT_PREFIX + _BARE_ASSIGNMENT_GUARD + _BARE_ASSIGNMENT_VALUE,
+_ASSIGNMENT_PATTERN: Final = re.compile(
+    rf"{_ASSIGNMENT_PREFIX}(?:{_QUOTED_ASSIGNMENT_VALUE}|{_BARE_ASSIGNMENT_VALUE})",
     re.IGNORECASE,
 )
 JsonScalar: TypeAlias = str | int | float | bool | None
@@ -58,27 +48,25 @@ JsonScalar: TypeAlias = str | int | float | bool | None
 
 def _sensitive_key(key: str) -> bool:
     normalized = re.sub(r"[^a-z0-9]+", "_", key.casefold()).strip("_")
-    compact = normalized.replace("_", "")
-    return (
-        normalized in _SENSITIVE_KEYS
-        or compact == "apikey"
-        or normalized.endswith(_SENSITIVE_SUFFIXES)
+    if normalized == "apikey":
+        normalized = "api_key"
+    return any(
+        normalized == leaf or normalized.endswith(f"_{leaf}")
+        for leaf in _SENSITIVE_KEY_LEAVES
     )
+
+
+def _redact_assignment(match: re.Match[str]) -> str:
+    key = match.group("key")
+    if not _sensitive_key(key):
+        return match.group(0)
+    quote = match.group("quote") or ""
+    return f"{key}{match.group('separator')}{quote}{REDACTED}{quote}"
 
 
 def redact_text(value: str) -> str:
     """Mask credential substrings while preserving surrounding useful text."""
-    value = _QUOTED_ASSIGNMENT_PATTERN.sub(
-        lambda match: (
-            f"{match.group('key')}{match.group('separator')}"
-            f"{match.group('quote')}{REDACTED}{match.group('quote')}"
-        ),
-        value,
-    )
-    value = _BARE_ASSIGNMENT_PATTERN.sub(
-        lambda match: f"{match.group('key')}{match.group('separator')}{REDACTED}",
-        value,
-    )
+    value = _ASSIGNMENT_PATTERN.sub(_redact_assignment, value)
     value = _CLI_EQUALS_PATTERN.sub(
         lambda match: f"{match.group('option')}={REDACTED}", value
     )

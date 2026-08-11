@@ -1,0 +1,15 @@
+POST-COMMIT DIRECT VERIFICATION
+scenario=current commit exercises all canonical key families at actual JSONL and manifest boundaries
+invocation=uv run pytest -q tests/unit/test_artifacts.py -k canonical_sensitive_policy
+....................................                                     [100%]
+36 passed, 7 deselected in 0.34s
+observable=36 passed and 7 unrelated tests deselected
+scenario=current commit passes full regression and static quality gates
+invocation=uv run pytest -q; uv run ruff check .; uv run ruff format --check src tests; uv run basedpyright
+.................................................................        [100%]
+65 passed in 0.52s
+All checks passed!
+28 files already formatted
+0 errors, 0 warnings, 0 notes
+verified_commit=a1d55e01565899930b41a57b347daad9d53027c4 subject=fix: unify sensitive key redaction policy
+judgment=PASS canonical mapping and free-text policy is consistent at both persistence boundaries

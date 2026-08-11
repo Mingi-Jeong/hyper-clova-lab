@@ -22,6 +22,9 @@ token fields are recursively replaced with `[REDACTED]` before persistence.
 Bearer credentials embedded in response/error text, env/generic assignments such
 as API-key, token, and password values, and CLI credentials in both
 `--option=value` and `--option value` forms are masked without removing surrounding
-evaluation content. JSON mappings and lists are defensively copied into immutable
+evaluation content. Mapping fields and free-text assignments share one canonical
+key policy covering authorization/auth, cookies, credentials, secrets, API keys,
+tokens, and passwords, including prefixed variants. JSON mappings and lists are
+defensively copied into immutable
 tuple-backed values at validation, then thawed into detached JSON only during
 serialization.
