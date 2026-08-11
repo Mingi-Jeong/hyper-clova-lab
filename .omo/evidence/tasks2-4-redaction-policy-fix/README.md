@@ -40,6 +40,11 @@
 - Binary observables: ancestry and blob checks pass, 36 boundary cases pass, all
   65 tests pass, and static gates remain clean.
 - Artifact: `stop-hook-direct-verification-2.txt`.
+- Scenario: terminal executor audit verifies both earlier evidence blobs and the
+  implementation ancestor before one final replay of boundary and full gates.
+- Binary observables: ancestry and both blobs resolve, 36 boundary cases and all
+  65 tests pass, with clean lint, formatting, and type analysis.
+- Artifact: `stop-hook-direct-verification-3.txt`.
 
 ## Manual property-style persistence table
 

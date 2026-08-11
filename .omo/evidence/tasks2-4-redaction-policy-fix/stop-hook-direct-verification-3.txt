@@ -1,0 +1,22 @@
+STOP-HOOK DIRECT VERIFICATION ATTEMPT 3
+artifact=.omo/evidence/tasks2-4-redaction-policy-fix/stop-hook-direct-verification-3.txt
+scenario=current HEAD retains implementation and both earlier direct audit blobs
+invocation=git merge-base --is-ancestor a6d7c78 HEAD; git cat-file -e for audit artifacts 1 and 2; git log -3 --oneline
+ea0a6d6 docs: record second canonical redaction audit
+1597f23 docs: record canonical redaction verification
+a6d7c78 fix: unify sensitive key redaction policy
+observable=implementation ancestry and both tracked evidence blobs verified
+scenario=current committed persistence boundaries cover every canonical key family
+invocation=uv run pytest -q tests/unit/test_artifacts.py -k canonical_sensitive_policy
+....................................                                     [100%]
+36 passed, 7 deselected in 0.36s
+observable=36 passed and 7 unrelated tests deselected
+scenario=current committed tree passes all regression and static gates
+invocation=uv run pytest -q; uv run ruff check .; uv run ruff format --check src tests; uv run basedpyright
+.................................................................        [100%]
+65 passed in 0.49s
+All checks passed!
+28 files already formatted
+0 errors, 0 warnings, 0 notes
+observable=65 passed; lint and format clean; zero type errors warnings or notes
+judgment=PASS all claimed implementation and durable-evidence criteria directly reproduced
