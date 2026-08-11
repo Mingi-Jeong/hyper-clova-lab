@@ -170,6 +170,57 @@ async def test_retry_after_and_backoff_use_injected_timing() -> None:
 
 
 @pytest.mark.anyio
+@pytest.mark.parametrize(
+    ("payload", "reflected_secret"),
+    [
+        (
+            {
+                "status": {
+                    "code": "api_key=provider-reflected-native",
+                    "message": "failed",
+                }
+            },
+            "provider-reflected-native",
+        ),
+        (
+            {
+                "error": {
+                    "code": "Authorization: Bearer provider-reflected-compatible",
+                    "message": "failed",
+                }
+            },
+            "provider-reflected-compatible",
+        ),
+    ],
+    ids=("native-status-code", "compatible-error-code"),
+)
+async def test_provider_error_code_cannot_reflect_credentials(
+    payload: JsonValue,
+    reflected_secret: str,
+) -> None:
+    # Given: the provider reflects a credential through either supported error shape.
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(500, json=payload, request=request)
+
+    client = OpenAICompatibleClient(
+        base_url="https://offline.invalid/v1/openai",
+        api_key="key",
+        budget=enabled_budget(),
+        transport=httpx2.MockTransport(handler),
+    )
+
+    # When / Then: every exception surface preserves only sanitized evidence.
+    with pytest.raises(ProviderApiError) as captured:
+        _ = await client.list_models()
+    provider_code = captured.value.provider_code or ""
+    response_body = captured.value.response_body or b""
+    assert reflected_secret not in provider_code
+    assert reflected_secret not in str(captured.value)
+    assert reflected_secret.encode() not in response_body
+    assert "[REDACTED]" in provider_code
+
+
+@pytest.mark.anyio
 async def test_native_parsers_reject_cross_contract_responses() -> None:
     # Given
     v3_response = {

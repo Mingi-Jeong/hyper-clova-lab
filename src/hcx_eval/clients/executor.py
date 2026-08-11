@@ -14,7 +14,7 @@ from hcx_eval.clients.base import (
     sanitized_url,
 )
 from hcx_eval.clients.sse import ParsedStream, parse_sse_lines
-from hcx_eval.security import redact_bytes
+from hcx_eval.security import redact_bytes, redact_text
 
 _CLIENT_ERROR: Final = 400
 _RETRY_BACKOFF_SECONDS: Final[float] = 1.0
@@ -46,9 +46,9 @@ def _error_details(response: httpx2.Response) -> str | None:
         except ValueError:
             return None
         else:
-            return compatible.error.code
+            return redact_text(compatible.error.code)
     else:
-        return native.status.code
+        return redact_text(native.status.code)
 
 
 def _provider_error(response: httpx2.Response, endpoint: str) -> ProviderApiError:
