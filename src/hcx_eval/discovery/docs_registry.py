@@ -9,8 +9,13 @@ from typing import ClassVar, Final
 from pydantic import BaseModel, ConfigDict, Field, ValidationError
 from typing_extensions import override
 
+from hcx_eval.schemas.model import ModelStatus
+
+_MODEL_IDENTIFIERS: Final = (
+    r"HCX(?:-DASH)?-\d{3}|LK-(?:B|D2)|bge-m3|clir-(?:emb|sts)-dolphin"
+)
 _MODEL_PATTERN: Final = re.compile(
-    r"(?<!\w)(?:HCX(?:-DASH)?-\d{3}|bge-m3|clir-(?:emb|sts)-dolphin)(?!\w)",
+    rf"(?<!\w)(?:{_MODEL_IDENTIFIERS})(?!\w)",
     re.IGNORECASE,
 )
 _ENDPOINT_PATTERN: Final = re.compile(r"(?<!:)\/(?:v\d+\/)?[a-z][A-Za-z0-9_{}./-]+")
@@ -67,6 +72,7 @@ class DocumentedModel(BaseModel):
     endpoints: tuple[str, ...]
     evidence_document_ids: tuple[int, ...]
     evidence_urls: tuple[str, ...]
+    status_hint: ModelStatus = ModelStatus.DOCUMENTED
 
 
 class DocsRegistry(BaseModel):
@@ -96,7 +102,78 @@ def _capabilities(document: SnapshotDocument) -> set[str]:
     return capabilities
 
 
-def parse_docs_snapshot(path: Path) -> DocsRegistry:
+def _snapshot_status(
+    documents: tuple[SnapshotDocument, ...],
+) -> ModelStatus:
+    historical_example = all(
+        document.section == "튜닝" and "목록 조회" in document.title
+        for document in documents
+    )
+    return (
+        ModelStatus.HISTORICAL_EXAMPLE_ONLY
+        if historical_example
+        else ModelStatus.DOCUMENTED
+    )
+
+
+def _normalize_identifier(identifier: str) -> str:
+    folded = identifier.casefold()
+    return identifier.upper() if folded.startswith(("hcx", "lk-")) else folded
+
+
+def _catalog_status(line: str) -> ModelStatus:
+    folded = line.casefold()
+    if "교체" in folded or "deprecated" in folded:
+        return ModelStatus.DEPRECATED
+    if "과거" in folded or "historical" in folded:
+        return ModelStatus.HISTORICAL_EXAMPLE_ONLY
+    return ModelStatus.DOCUMENTED
+
+
+def _merge_catalog_models(
+    models: list[DocumentedModel], catalog_path: Path
+) -> list[DocumentedModel]:
+    try:
+        catalog = catalog_path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as error:
+        raise DocsSnapshotError(path=catalog_path, reason=str(error)) from error
+    evidence_url = f"urn:local-doc:{catalog_path.name}"
+    catalog_statuses: dict[str, ModelStatus] = {}
+    for line in catalog.splitlines():
+        for match in _MODEL_PATTERN.finditer(line):
+            identifier = _normalize_identifier(match.group(0))
+            status = _catalog_status(line)
+            previous = catalog_statuses.get(identifier, ModelStatus.DOCUMENTED)
+            if previous is ModelStatus.DOCUMENTED or status is ModelStatus.DEPRECATED:
+                catalog_statuses[identifier] = status
+
+    by_id = {model.identifier: model for model in models}
+    for identifier, status in catalog_statuses.items():
+        existing = by_id.get(identifier)
+        if existing is None:
+            by_id[identifier] = DocumentedModel(
+                identifier=identifier,
+                capabilities=(),
+                endpoints=(),
+                evidence_document_ids=(),
+                evidence_urls=(evidence_url,),
+                status_hint=status,
+            )
+        else:
+            by_id[identifier] = existing.model_copy(
+                update={
+                    "evidence_urls": tuple(
+                        sorted({*existing.evidence_urls, evidence_url})
+                    ),
+                    "status_hint": status,
+                }
+            )
+    return [by_id[identifier] for identifier in sorted(by_id)]
+
+
+def parse_docs_snapshot(
+    path: Path, *, catalog_path: Path | None = None
+) -> DocsRegistry:
     """Parse the collected JSON snapshot into a model-to-document registry."""
     try:
         raw = path.read_bytes()
@@ -115,11 +192,7 @@ def parse_docs_snapshot(path: Path) -> DocsRegistry:
             (document.title, *document.headings, document.content)
         )
         for match in _MODEL_PATTERN.finditer(document_text):
-            identifier = match.group(0)
-            if identifier.casefold().startswith("hcx"):
-                identifier = identifier.upper()
-            else:
-                identifier = identifier.lower()
+            identifier = _normalize_identifier(match.group(0))
             model_evidence.setdefault(identifier, []).append(document)
 
     models: list[DocumentedModel] = []
@@ -146,8 +219,11 @@ def parse_docs_snapshot(path: Path) -> DocsRegistry:
                 endpoints=tuple(endpoints),
                 evidence_document_ids=tuple(document.id for document in documents),
                 evidence_urls=tuple(document.url for document in documents),
+                status_hint=_snapshot_status(documents),
             )
         )
+    if catalog_path is not None:
+        models = _merge_catalog_models(models, catalog_path)
     return DocsRegistry(
         snapshot_sha256=hashlib.sha256(raw).hexdigest(),
         documents=envelope.documents,

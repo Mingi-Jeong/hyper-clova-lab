@@ -3,13 +3,18 @@ from hcx_eval.registry.models import LiveModel, merge_model_registry
 from hcx_eval.schemas.model import ModelStatus
 
 
-def documented(identifier: str, capabilities: tuple[str, ...] = ()) -> DocumentedModel:
+def documented(
+    identifier: str,
+    capabilities: tuple[str, ...] = (),
+    status_hint: ModelStatus = ModelStatus.DOCUMENTED,
+) -> DocumentedModel:
     return DocumentedModel(
         identifier=identifier,
         capabilities=capabilities,
         endpoints=("/v3/chat-completions/{modelName}",),
         evidence_document_ids=(2,),
         evidence_urls=("https://docs.invalid/model",),
+        status_hint=status_hint,
     )
 
 
@@ -26,7 +31,7 @@ def test_registry_merge_keeps_documented_only_live_only_and_provenance() -> None
 
     # Then
     by_id = {record.identifier: record for record in merged}
-    assert by_id["DOC-ONLY"].status is ModelStatus.UNAVAILABLE
+    assert by_id["DOC-ONLY"].status is ModelStatus.DOCUMENTED
     assert by_id["LIVE-ONLY"].status is ModelStatus.LIVE
     assert by_id["BOTH"].status is ModelStatus.LIVE
     capability = {item.name: item for item in by_id["BOTH"].capabilities}
@@ -65,3 +70,44 @@ def test_registry_merge_deduplicates_live_ids_and_preserves_unknown_capability()
     assert len(merged) == 1
     assert merged[0].capabilities[0].name == "future_mode"
     assert merged[0].capabilities[0].supported is None
+
+
+def test_registry_merge_uses_documented_historical_provenance() -> None:
+    # Given
+    docs = (
+        documented("HCX-002", status_hint=ModelStatus.HISTORICAL_EXAMPLE_ONLY),
+        documented("LK-B", status_hint=ModelStatus.DEPRECATED),
+    )
+
+    # When
+    merged = merge_model_registry(docs, ())
+
+    # Then
+    by_id = {record.identifier: record for record in merged}
+    assert by_id["HCX-002"].status is ModelStatus.HISTORICAL_EXAMPLE_ONLY
+    assert by_id["LK-B"].status is ModelStatus.DEPRECATED
+    assert "official-doc-status:deprecated" in by_id["LK-B"].evidence
+
+
+def test_registry_merge_retains_catalog_only_model_evidence() -> None:
+    # Given
+    docs = (
+        DocumentedModel(
+            identifier="LK-D2",
+            capabilities=(),
+            endpoints=(),
+            evidence_document_ids=(),
+            evidence_urls=("urn:local-doc:catalog.md",),
+            status_hint=ModelStatus.DEPRECATED,
+        ),
+    )
+
+    # When
+    merged = merge_model_registry(docs, ())
+
+    # Then
+    assert merged[0].identifier == "LK-D2"
+    assert merged[0].evidence == (
+        "official-doc-url:urn:local-doc:catalog.md",
+        "official-doc-status:deprecated",
+    )

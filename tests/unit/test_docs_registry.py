@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from hcx_eval.discovery.docs_registry import DocsSnapshotError, parse_docs_snapshot
+from hcx_eval.schemas.model import ModelStatus
 
 if TYPE_CHECKING:
     from pydantic import JsonValue
@@ -19,7 +20,10 @@ def test_official_snapshot_registers_all_documents_and_documented_models() -> No
     )
 
     # When: the registry is parsed.
-    registry = parse_docs_snapshot(snapshot)
+    registry = parse_docs_snapshot(
+        snapshot,
+        catalog_path=Path("docs/model-evaluation/02_HYPERCLOVA_MODEL_CATALOG.md"),
+    )
 
     # Then: all documents and the full documented model set are traceable.
     assert len(registry.documents) == 31
@@ -33,8 +37,30 @@ def test_official_snapshot_registers_all_documents_and_documented_models() -> No
         "bge-m3",
         "clir-emb-dolphin",
         "clir-sts-dolphin",
+        "LK-B",
+        "LK-D2",
     }
-    assert all(model.evidence_document_ids for model in registry.models)
+    assert all(
+        model.evidence_document_ids or model.evidence_urls for model in registry.models
+    )
+    by_id = {model.identifier: model for model in registry.models}
+    assert by_id["HCX-002"].status_hint is ModelStatus.HISTORICAL_EXAMPLE_ONLY
+    assert by_id["LK-B"].status_hint is ModelStatus.DEPRECATED
+    assert by_id["LK-D2"].status_hint is ModelStatus.DEPRECATED
+
+
+def test_snapshot_provenance_marks_task_example_as_historical() -> None:
+    # Given
+    snapshot = Path(
+        "naver-clova-studio-instructions-all-docs/naver_clova_studio_all_docs.json"
+    )
+
+    # When
+    registry = parse_docs_snapshot(snapshot)
+
+    # Then
+    by_id = {model.identifier: model for model in registry.models}
+    assert by_id["HCX-002"].status_hint is ModelStatus.HISTORICAL_EXAMPLE_ONLY
 
 
 def test_snapshot_parser_rejects_duplicate_document_ids(tmp_path: Path) -> None:

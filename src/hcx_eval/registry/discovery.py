@@ -20,6 +20,12 @@ class DiscoveryResult(BaseModel):
     external_requests: int
 
 
+def _write_raw(path: Path, raw: bytes) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("xb") as stream:
+        _ = stream.write(raw)
+
+
 async def discover_models(
     *,
     client: OpenAICompatibleClient,
@@ -27,10 +33,12 @@ async def discover_models(
     raw_output: Path,
 ) -> DiscoveryResult:
     """Fetch once, persist bytes unchanged, and merge the dynamic registry."""
-    response = await client.list_models()
-    raw_output.parent.mkdir(parents=True, exist_ok=True)
-    with raw_output.open("xb") as stream:
-        _ = stream.write(response.raw)
+
+    def preserve(raw: bytes) -> None:
+        _write_raw(raw_output, raw)
+
+    raw = await client.fetch_models_raw(preserve)
+    response = client.parse_models(raw)
     live = tuple(LiveModel(identifier=identifier) for identifier in response.models)
     return DiscoveryResult(
         models=merge_model_registry(documented, live),

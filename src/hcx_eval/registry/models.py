@@ -31,22 +31,23 @@ def _document_capabilities(model: DocumentedModel | None) -> dict[str, set[str]]
 
 
 def _model_status(
-    identifier: str,
+    documented_model: DocumentedModel | None,
     live_model: LiveModel | None,
     deprecated_ids: frozenset[str],
     restricted_ids: frozenset[str],
 ) -> ModelStatus:
     if live_model is not None:
+        identifier = live_model.identifier
         return (
             ModelStatus.RESTRICTED
             if identifier in restricted_ids
             else live_model.status
         )
-    return (
-        ModelStatus.DEPRECATED
-        if identifier in deprecated_ids
-        else ModelStatus.UNAVAILABLE
-    )
+    if documented_model is None:
+        return ModelStatus.UNKNOWN
+    if documented_model.identifier in deprecated_ids:
+        return ModelStatus.DEPRECATED
+    return documented_model.status_hint
 
 
 def merge_model_registry(
@@ -77,7 +78,9 @@ def merge_model_registry(
             for name in live_model.capabilities:
                 capability_evidence.setdefault(name, set()).add("live:/models")
 
-        status = _model_status(identifier, live_model, deprecated_ids, restricted_ids)
+        status = _model_status(
+            documented_model, live_model, deprecated_ids, restricted_ids
+        )
 
         evidence: list[str] = []
         if documented_model is not None:
@@ -85,6 +88,13 @@ def merge_model_registry(
                 f"official-docs:{value}"
                 for value in documented_model.evidence_document_ids
             )
+            evidence.extend(
+                f"official-doc-url:{value}" for value in documented_model.evidence_urls
+            )
+            if documented_model.status_hint is not ModelStatus.DOCUMENTED:
+                evidence.append(
+                    f"official-doc-status:{documented_model.status_hint.value}"
+                )
         if identifier in deprecated_ids:
             evidence.append("official-docs:deprecated")
         if live_model is not None:
