@@ -1,0 +1,45 @@
+F.                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_writer_redacts_sensitive_assignments_and_preserves_delimiters ______
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-44/test_writer_redacts_sensitive_0')
+
+    def test_writer_redacts_sensitive_assignments_and_preserves_delimiters(
+        tmp_path: Path,
+    ) -> None:
+        # Given: quoted and bare assignments surrounded by useful evaluation prose.
+        result = RawResult(
+            run_id="run-1",
+            request_id="request-1",
+            case_id="case-1",
+            model="HCX-005",
+            api_family=ApiFamily.NATIVE_V3,
+            prompt_version="v1",
+            dataset_sha256="a" * 64,
+            docs_snapshot_sha256="b" * 64,
+            request=RequestSnapshot.model_validate({"payload": {"messages": []}}),
+            response_text=(
+                "keep CLOVA_STUDIO_API_KEY='env secret', "
+                'Api_Key="generic secret"; token=token-secret&next=visible '
+                "password=pass-secret. prose api_key remains"
+            ),
+            timing=Timing(started_at=datetime.now(UTC), e2e_ms=1),
+        )
+
+        # When: the result crosses the append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(result)
+        text = path.read_text()
+
+        # Then: secret values vanish while quotes, delimiters, and prose remain.
+        assert "env secret" not in text
+        assert "generic secret" not in text
+        assert "token-secret" not in text
+        assert "pass-secret" not in text
+        assert "CLOVA_STUDIO_API_KEY='[REDACTED]'," in text
+>       assert 'Api_Key=\"[REDACTED]\";' in text
+E       assert 'Api_Key="[REDACTED]";' in '{"api_family":"native-v3","case_id":"case-1","concurrency":1,"connection_reused":false,"dataset_sha256":"aaaaaaaaaaaa...l,"response_headers_ms":null,"started_at":"2026-08-11T20:02:27.670369Z","tpot_ms":null,"ttft_ms":null},"usage":null}\n'
+
+tests/unit/test_artifacts.py:170: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_artifacts.py::test_writer_redacts_sensitive_assignments_and_preserves_delimiters
+1 failed, 1 passed in 0.18s

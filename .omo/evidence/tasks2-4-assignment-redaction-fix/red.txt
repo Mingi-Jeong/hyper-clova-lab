@@ -1,0 +1,84 @@
+FF                                                                       [100%]
+=================================== FAILURES ===================================
+______ test_writer_redacts_sensitive_assignments_and_preserves_delimiters ______
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-43/test_writer_redacts_sensitive_0')
+
+    def test_writer_redacts_sensitive_assignments_and_preserves_delimiters(
+        tmp_path: Path,
+    ) -> None:
+        # Given: quoted and bare assignments surrounded by useful evaluation prose.
+        result = RawResult(
+            run_id="run-1",
+            request_id="request-1",
+            case_id="case-1",
+            model="HCX-005",
+            api_family=ApiFamily.NATIVE_V3,
+            prompt_version="v1",
+            dataset_sha256="a" * 64,
+            docs_snapshot_sha256="b" * 64,
+            request=RequestSnapshot.model_validate({"payload": {"messages": []}}),
+            response_text=(
+                "keep CLOVA_STUDIO_API_KEY='env secret', "
+                'Api_Key="generic secret"; token=token-secret&next=visible '
+                "password=pass-secret. prose api_key remains"
+            ),
+            timing=Timing(started_at=datetime.now(UTC), e2e_ms=1),
+        )
+
+        # When: the result crosses the append-only writer boundary.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").append(result)
+        text = path.read_text()
+
+        # Then: secret values vanish while quotes, delimiters, and prose remain.
+>       assert "env secret" not in text
+E       assert 'env secret' not in '{"api_famil...age":null}\n'
+E
+E         'env secret' is contained here:
+E           _API_KEY='env secret', Api_Key=\"generic secret\"; token=token-secret&next=visible password=pass-secret. prose api_key remains","retry_count":0,"run_id":"run-1","stream":false,"timing":{"e2e_ms":1.0,"inter_token_gap_p95_ms":"[REDACTED]","max_stall_ms":null,"response_headers_ms":null,"started_at":"2026-08-11T20:01:37.774474Z","tpot_ms":null,"ttft_ms":null},"usage":null}
+E         ?           ++++++++++
+
+tests/unit/test_artifacts.py:165: AssertionError
+______________ test_writer_redacts_assignment_secrets_in_manifest ______________
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-43/test_writer_redacts_assignment0')
+
+    def test_writer_redacts_assignment_secrets_in_manifest(tmp_path: Path) -> None:
+        # Given: a manifest invocation with env, generic, and CLI credentials.
+        manifest = RunManifest(
+            run_id="run-1",
+            created_at=datetime.now(UTC),
+            git_commit_sha="commit",
+            git_dirty=False,
+            python_version="3.11",
+            dependency_versions=(),
+            model_registry=(),
+            config_sha256="a" * 64,
+            dataset_sha256="b" * 64,
+            docs_snapshot_sha256="c" * 64,
+            max_requests=1,
+            max_tokens=1,
+            max_concurrency=1,
+            invocation=(
+                "CloVa_Studio_Api_Key='env secret' token=token-secret "
+                "hcx --authorization=auth-secret run"
+            ),
+        )
+
+        # When: the manifest is persisted through the real writer.
+        path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+        text = path.read_text()
+
+        # Then: no assignment value reaches disk and command structure remains.
+>       assert all(
+            secret not in text
+            for secret in ("env secret", "token-secret", "auth-secret")
+        )
+E       assert False
+E        +  where False = all(<generator object test_writer_redacts_assignment_secrets_in_manifest.<locals>.<genexpr> at 0x76eb088b6500>)
+
+tests/unit/test_artifacts.py:202: AssertionError
+=========================== short test summary info ============================
+FAILED tests/unit/test_artifacts.py::test_writer_redacts_sensitive_assignments_and_preserves_delimiters
+FAILED tests/unit/test_artifacts.py::test_writer_redacts_assignment_secrets_in_manifest
+2 failed in 0.18s

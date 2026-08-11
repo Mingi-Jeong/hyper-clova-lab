@@ -5,6 +5,7 @@ import pytest
 from pydantic import BaseModel, JsonValue, TypeAdapter
 
 from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+from hcx_eval.schemas.manifest import RunManifest
 from hcx_eval.schemas.results import (
     ApiFamily,
     ErrorDetail,
@@ -132,3 +133,79 @@ def test_writer_redacts_raw_result_free_text_before_persistence(
     assert persisted_error["message"] == ("failed Bearer [REDACTED] safely")
     assert "response-secret" not in path.read_text()
     assert "error-secret" not in path.read_text()
+
+
+def test_writer_redacts_sensitive_assignments_and_preserves_delimiters(
+    tmp_path: Path,
+) -> None:
+    # Given: quoted and bare assignments surrounded by useful evaluation prose.
+    result = RawResult(
+        run_id="run-1",
+        request_id="request-1",
+        case_id="case-1",
+        model="HCX-005",
+        api_family=ApiFamily.NATIVE_V3,
+        prompt_version="v1",
+        dataset_sha256="a" * 64,
+        docs_snapshot_sha256="b" * 64,
+        request=RequestSnapshot.model_validate({"payload": {"messages": []}}),
+        response_text=(
+            "keep CLOVA_STUDIO_API_KEY='env secret', "
+            'Api_Key="generic secret"; token=token-secret&next=visible '
+            "password=pass-secret. prose api_key remains"
+        ),
+        timing=Timing(started_at=datetime.now(UTC), e2e_ms=1),
+    )
+
+    # When: the result crosses the append-only writer boundary.
+    path = SegmentedJsonlWriter(tmp_path, "run-1").append(result)
+    text = path.read_text()
+    persisted = TypeAdapter(dict[str, JsonValue]).validate_json(text)
+    response_text = persisted["response_text"]
+
+    # Then: secret values vanish while quotes, delimiters, and prose remain.
+    assert isinstance(response_text, str)
+    assert "env secret" not in text
+    assert "generic secret" not in text
+    assert "token-secret" not in text
+    assert "pass-secret" not in text
+    assert "CLOVA_STUDIO_API_KEY='[REDACTED]'," in response_text
+    assert 'Api_Key="[REDACTED]";' in response_text
+    assert "token=[REDACTED]&next=visible" in response_text
+    assert "password=[REDACTED]. prose api_key remains" in response_text
+    assert '"inter_token_gap_p95_ms":null' in text
+
+
+def test_writer_redacts_assignment_secrets_in_manifest(tmp_path: Path) -> None:
+    # Given: a manifest invocation with env, generic, and CLI credentials.
+    manifest = RunManifest(
+        run_id="run-1",
+        created_at=datetime.now(UTC),
+        git_commit_sha="commit",
+        git_dirty=False,
+        python_version="3.11",
+        dependency_versions=(),
+        model_registry=(),
+        config_sha256="a" * 64,
+        dataset_sha256="b" * 64,
+        docs_snapshot_sha256="c" * 64,
+        max_requests=1,
+        max_tokens=1,
+        max_concurrency=1,
+        invocation=(
+            "CloVa_Studio_Api_Key='env secret' token=token-secret "
+            "hcx --authorization=auth-secret run"
+        ),
+    )
+
+    # When: the manifest is persisted through the real writer.
+    path = SegmentedJsonlWriter(tmp_path, "run-1").create_manifest(manifest)
+    text = path.read_text()
+
+    # Then: no assignment value reaches disk and command structure remains.
+    assert all(
+        secret not in text for secret in ("env secret", "token-secret", "auth-secret")
+    )
+    assert "CloVa_Studio_Api_Key=[REDACTED]" in text
+    assert "token=[REDACTED]" in text
+    assert "--authorization=[REDACTED]" in text
