@@ -1,0 +1,165 @@
+"""OpenAI-compatible CLOVA Studio adapter."""
+
+from typing import ClassVar
+
+import httpx2
+from pydantic import BaseModel, ConfigDict, Field
+
+from hcx_eval.clients.base import (
+    ApiFamily,
+    HttpExecutor,
+    RequestBudget,
+    RequestPlan,
+    create_async_client,
+    sanitized_url,
+)
+from hcx_eval.clients.sse import ParsedStream, parse_sse
+from hcx_eval.clients.types import ChatMessage
+
+
+class OpenAIChatRequest(BaseModel):
+    """OpenAI snake_case chat request."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
+    model: str
+    messages: tuple[ChatMessage, ...]
+    max_tokens: int | None = Field(default=None, ge=1)
+    stream: bool = False
+
+
+class OpenAIEmbeddingRequest(BaseModel):
+    """OpenAI-compatible embedding request with mandatory float encoding."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
+    model: str
+    input: str
+    encoding_format: str = "float"
+
+
+class OpenAIChoice(BaseModel):
+    """One OpenAI-compatible chat choice."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    index: int
+    message: ChatMessage
+    finish_reason: str | None
+
+
+class OpenAIUsage(BaseModel):
+    """OpenAI snake_case token accounting."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    prompt_tokens: int
+    completion_tokens: int = 0
+    total_tokens: int
+
+
+class OpenAIChatResponse(BaseModel):
+    """OpenAI-compatible chat response."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    id: str
+    model: str
+    choices: tuple[OpenAIChoice, ...]
+    usage: OpenAIUsage
+
+
+class OpenAIEmbeddingItem(BaseModel):
+    """One OpenAI-compatible embedding vector."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    index: int
+    embedding: tuple[float, ...]
+
+
+class OpenAIEmbeddingResponse(BaseModel):
+    """OpenAI-compatible embeddings response."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    data: tuple[OpenAIEmbeddingItem, ...]
+    model: str
+    usage: OpenAIUsage
+
+
+class ModelsWireResponse(BaseModel):
+    """Untrusted `/models` response boundary."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    data: tuple[dict[str, str], ...]
+
+
+class ModelsResponse(BaseModel):
+    """Exact bytes and normalized identifiers from `/models`."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True)
+    raw: bytes
+    models: tuple[str, ...]
+
+
+class OpenAICompatibleClient:
+    """Typed adapter for `/v1/openai` without SDK retry ambiguity."""
+
+    _base_url: str
+    _executor: HttpExecutor
+
+    def __init__(
+        self,
+        *,
+        base_url: str,
+        api_key: str,
+        budget: RequestBudget,
+        transport: httpx2.AsyncBaseTransport | None = None,
+    ) -> None:
+        """Bind the compatible endpoint to bounded execution."""
+        self._base_url = sanitized_url(base_url)
+        self._executor = HttpExecutor(
+            client=create_async_client(
+                base_url=base_url, api_key=api_key, transport=transport
+            ),
+            budget=budget,
+        )
+
+    def plan_models(self) -> RequestPlan:
+        """Build a secret-free model discovery plan."""
+        return RequestPlan(
+            api_family=ApiFamily.OPENAI_COMPATIBLE,
+            method="GET",
+            endpoint=f"{self._base_url}/models",
+            estimated_tokens=0,
+        )
+
+    async def list_models(self) -> ModelsResponse:
+        """Fetch model identifiers while retaining exact response bytes."""
+        response = await self._executor.request(method="GET", path="models")
+        parsed = ModelsWireResponse.model_validate_json(response.content)
+        identifiers = tuple(item["id"] for item in parsed.data if "id" in item)
+        return ModelsResponse(raw=response.content, models=identifiers)
+
+    async def chat(self, request: OpenAIChatRequest) -> OpenAIChatResponse:
+        """Send an OpenAI-compatible chat request."""
+        response = await self._executor.request(
+            method="POST",
+            path="chat/completions",
+            estimated_tokens=request.max_tokens or 0,
+            json_body=request.model_dump(exclude_none=True),
+        )
+        return OpenAIChatResponse.model_validate_json(response.content)
+
+    async def embed(self, request: OpenAIEmbeddingRequest) -> OpenAIEmbeddingResponse:
+        """Send an OpenAI-compatible float embedding request."""
+        response = await self._executor.request(
+            method="POST", path="embeddings", json_body=request.model_dump()
+        )
+        return OpenAIEmbeddingResponse.model_validate_json(response.content)
+
+    async def chat_stream(self, request: OpenAIChatRequest) -> ParsedStream:
+        """Parse an OpenAI-compatible SSE chat stream."""
+        streaming_request = request.model_copy(update={"stream": True})
+        response = await self._executor.request(
+            method="POST",
+            path="chat/completions",
+            estimated_tokens=request.max_tokens or 0,
+            json_body=streaming_request.model_dump(exclude_none=True),
+            headers={"Accept": "text/event-stream"},
+        )
+        return parse_sse(response.content)
