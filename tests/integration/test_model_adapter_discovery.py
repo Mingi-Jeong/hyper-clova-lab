@@ -6,7 +6,8 @@ from pydantic import ValidationError
 
 from hcx_eval.clients.base import ProviderApiError, RequestBudget, RequestPolicy
 from hcx_eval.clients.openai_compat import OpenAICompatibleClient
-from hcx_eval.registry.discovery import discover_models
+from hcx_eval.registry.discovery import discover_models, write_model_registry
+from hcx_eval.schemas.model import ModelRecord, ModelStatus
 
 
 @pytest.mark.anyio
@@ -154,3 +155,17 @@ async def test_discovery_redacts_sensitive_malformed_success_evidence(
     assert "malformed-bearer" not in rendered_error
     assert "malformed-cookie" not in rendered_error
     assert b"[REDACTED]" in persisted
+
+
+def test_registry_writer_rejects_protected_source_target(tmp_path: Path) -> None:
+    protected = tmp_path / "processed-data" / "registry.json"
+    model = ModelRecord(
+        identifier="HCX-MOCK",
+        status=ModelStatus.LIVE,
+        evidence=("fixture",),
+    )
+
+    with pytest.raises(ValueError, match="protected source root"):
+        _ = write_model_registry((model,), protected)
+
+    assert not protected.exists()

@@ -18,5 +18,5 @@ Protected inputs are `processed-data/` and
 - [x] 12. Add capability-specific generation tracks.
 - [x] 13. Add synthetic financial safety red-team.
 - [x] 14. Implement report generators.
-- [ ] 15. Write runbook and verify offline.
+- [x] 15. Write runbook and verify offline.
 - [ ] 16. User-key live discovery and smoke test (requires user approval and injected key).

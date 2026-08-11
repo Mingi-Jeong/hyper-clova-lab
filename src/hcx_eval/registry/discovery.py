@@ -1,16 +1,28 @@
 """Raw-byte-exact OpenAI-compatible model discovery."""
 
-from pathlib import Path
-from typing import ClassVar
+from __future__ import annotations
 
-from pydantic import BaseModel, ConfigDict, ValidationError
+from itertools import pairwise
+from pathlib import Path  # noqa: TC003 - Pydantic resolves Path at runtime.
+from typing import TYPE_CHECKING, ClassVar
+
+from pydantic import BaseModel, ConfigDict, TypeAdapter, ValidationError
 
 from hcx_eval.clients.base import ProviderApiError
-from hcx_eval.clients.openai_compat import OpenAICompatibleClient
-from hcx_eval.discovery.docs_registry import DocumentedModel
 from hcx_eval.registry.models import LiveModel, merge_model_registry
 from hcx_eval.schemas.model import ModelRecord
 from hcx_eval.security import redact_bytes
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from hcx_eval.clients.openai_compat import OpenAICompatibleClient
+    from hcx_eval.discovery.docs_registry import DocumentedModel
+
+_MODEL_RECORDS = TypeAdapter(tuple[ModelRecord, ...])
+_PROTECTED_NAMES = frozenset(
+    {".hermes", "naver-clova-studio-instructions-all-docs", "processed-data"}
+)
 
 
 class DiscoveryResult(BaseModel):
@@ -23,9 +35,24 @@ class DiscoveryResult(BaseModel):
 
 
 def _write_raw(path: Path, raw: bytes) -> None:
+    parts = path.resolve().parts
+    model_evaluation = any(
+        current == "docs" and following == "model-evaluation"
+        for current, following in pairwise(parts)
+    )
+    if any(part in _PROTECTED_NAMES for part in parts) or model_evaluation:
+        message = "discovery output cannot be beneath a protected source root"
+        raise ValueError(message)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("xb") as stream:
         _ = stream.write(raw)
+
+
+def write_model_registry(models: Sequence[ModelRecord], path: Path) -> Path:
+    """Persist a validated merged registry once without source mutation."""
+    payload = _MODEL_RECORDS.dump_json(tuple(models)) + b"\n"
+    _write_raw(path, payload)
+    return path
 
 
 async def discover_models(

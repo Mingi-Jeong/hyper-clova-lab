@@ -66,5 +66,10 @@
     "status": "completed",
     "scope": "all nine evidence-linked scorecard tables, explicit missing states, separate factual and pension insight reports, golden Markdown, and write-once Pareto charts"
   },
-  "next_task": "task 15 offline runbook and verification"
+  "task_15": {
+    "status": "completed",
+    "scope": "offline-first inventory/discovery/report CLI, exact specialized-phase preflights, architecture and runbook documentation, and MockTransport end-to-end verification",
+    "verification": "153 pytest tests, Ruff format/check, basedpyright, CLI help, inventory, discovery dry-run, and mock E2E all pass; protected source hashes unchanged; external requests 0"
+  },
+  "next_task": "task 16 user-approved live discovery and smoke (not performed)"
 }

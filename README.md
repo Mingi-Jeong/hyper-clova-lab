@@ -1,27 +1,51 @@
 # HyperCLOVA X Financial Evaluation Harness
 
 An offline-first, reproducible harness for evaluating HyperCLOVA X models and
-tools against Korean financial and pension-service tasks.
+API tools on Korean financial and pension-service tasks. It keeps
+OpenAI-compatible, native v1, and native v3 wire contracts separate, retains
+failed calls as evidence, and never turns a missing result into an estimated
+score.
 
 ## Safety baseline
 
-The scaffold never makes network calls. Running `hcx-eval` without a command
-prints an offline status message only. Live discovery and benchmark execution
-will be added in later tasks and must remain explicitly bounded by request and
-budget controls.
+- `inventory`, `build-cases`, `report`, and every default dry-run are local-only.
+- `discover`, `smoke`, and baseline generation require both `--execute` and
+  `EXECUTE=true`, plus positive request/token ceilings and an injected key.
+- Specialized `latency`, `embeddings`, `api-tools`, and `safety` phases expose
+  bounded preflights, but live execution is deliberately blocked before the
+  approved post-smoke workflow.
+- `.env`, credentials, and authorization values are ignored and redacted.
+- `processed-data/`, `naver-clova-studio-instructions-all-docs/`, and
+  `docs/model-evaluation/` are read-only inputs.
 
-`processed-data/` and `naver-clova-studio-instructions-all-docs/` are immutable
-inputs. Create a local `.env` from `.env.example` only when live access has been
-approved; `.env` is ignored by Git.
+No real CLOVA request is needed for development or verification.
 
-## Local checks
+## Setup and checks
 
 ```bash
-uv sync
+uv sync --frozen
 uv run pytest -q
-uv run ruff check .
 uv run ruff format --check .
+uv run ruff check .
 uv run basedpyright
-hcx-eval --help
-hcx-eval
+uv run hcx-eval --help
 ```
+
+## Offline workflow
+
+```bash
+uv run hcx-eval inventory
+uv run hcx-eval build-cases --dataset structured
+uv run hcx-eval discover --dry-run
+uv run hcx-eval smoke --max-requests 20 --dry-run
+uv run hcx-eval run --phase faq --models all --max-requests 100 --dry-run
+uv run hcx-eval run --phase safety --max-requests 100 --dry-run
+uv run hcx-eval report --run-id <RUN_ID>
+```
+
+`report` reads
+`results/<RUN_ID>/normalized/report-bundle.json` unless `--bundle` is supplied.
+It writes separate factual and pension-service insight reports once. See
+[the runbook](docs/implementation/RUNBOOK.md) for live preconditions, resume,
+request accounting, and cleanup, and
+[the architecture](docs/implementation/ARCHITECTURE.md) for trust boundaries.
