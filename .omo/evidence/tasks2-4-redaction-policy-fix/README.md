@@ -29,6 +29,12 @@
 - Binary observables: 36 boundary cases and all 65 tests pass, with clean lint,
   formatting, and type analysis.
 - Artifact: `post-commit-verification.txt`.
+- Scenario: direct executor stop-hook replay against the stable implementation
+  commit, including boundary tests, all gates, a sensitive/ordinary policy table,
+  and protected inventories.
+- Binary observables: 36 boundary cases and all 65 tests pass; 17 canonical
+  policy and seven ordinary-preservation checks agree; protected hashes match.
+- Artifact: `stop-hook-direct-verification.txt`.
 
 ## Manual property-style persistence table
 
