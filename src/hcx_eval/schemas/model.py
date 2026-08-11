@@ -15,6 +15,7 @@ class ModelStatus(StrEnum):
     UNAVAILABLE = "unavailable"
     HISTORICAL_EXAMPLE_ONLY = "historical-example-only"
     DOCUMENTED = "documented"
+    UNKNOWN = "unknown"
 
 
 class Capability(BaseModel):
