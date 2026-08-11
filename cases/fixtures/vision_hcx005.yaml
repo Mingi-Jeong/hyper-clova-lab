@@ -1,0 +1,6 @@
+case_id: VISION-PENSION-0001
+source_path: processed-data/markdown/docs/assets/doc26/media/image1.png
+sha256: 079794664eafa73e82282416e4f8c27e41bfed03dc40609ad6177adb006581ce
+media_type: image/png
+review_status: reviewed
+prompt: 이미지의 핵심 금융 정보를 사실만 사용해 설명하세요.

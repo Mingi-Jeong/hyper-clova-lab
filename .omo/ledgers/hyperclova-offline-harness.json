@@ -54,5 +54,9 @@
     "status": "completed",
     "scope": "reviewed pension retrieval benchmark, bounded embedding evaluation with dimension/input validation, and isolated API-tool quality-gain and incremental-latency scoring"
   },
-  "next_task": "task 12 capability-specific generation tracks"
+  "task_12": {
+    "status": "completed",
+    "scope": "probe-gated isolated Thinking, Structured Outputs, Function calling, hash-pinned reviewed PNG vision, and context-limit cells"
+  },
+  "next_task": "task 13 synthetic financial safety red-team"
 }
