@@ -51,6 +51,15 @@ class NativeV3Result(BaseModel):
     finish_reason: str = Field(validation_alias="finishReason")
     usage: NativeV3Usage
     created: int
+    v1_stop_reason: None = Field(
+        default=None, validation_alias="stopReason", exclude=True
+    )
+    v1_input_length: None = Field(
+        default=None, validation_alias="inputLength", exclude=True
+    )
+    v1_output_length: None = Field(
+        default=None, validation_alias="outputLength", exclude=True
+    )
 
 
 class NativeV3Response(BaseModel):

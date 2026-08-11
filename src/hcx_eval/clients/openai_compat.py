@@ -1,6 +1,6 @@
 """OpenAI-compatible CLOVA Studio adapter."""
 
-from typing import ClassVar
+from typing import ClassVar, Literal
 
 import httpx2
 from pydantic import BaseModel, ConfigDict, Field
@@ -12,7 +12,7 @@ from hcx_eval.clients.base import (
     create_async_client,
     sanitized_url,
 )
-from hcx_eval.clients.executor import HttpExecutor
+from hcx_eval.clients.executor import HttpExecutor, ResponseObserver
 from hcx_eval.clients.sse import ParsedStream
 from hcx_eval.clients.types import ChatMessage
 
@@ -33,7 +33,7 @@ class OpenAIEmbeddingRequest(BaseModel):
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="forbid")
     model: str
     input: str
-    encoding_format: str = "float"
+    encoding_format: Literal["float"] = "float"
 
 
 class OpenAIChoice(BaseModel):
@@ -81,11 +81,21 @@ class OpenAIEmbeddingResponse(BaseModel):
     usage: OpenAIUsage
 
 
+class ModelListItem(BaseModel):
+    """One heterogeneous OpenAI-compatible model descriptor."""
+
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    id: str
+    object: str | None = None
+    created: int | None = None
+    owned_by: str | None = None
+
+
 class ModelsWireResponse(BaseModel):
     """Untrusted `/models` response boundary."""
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
-    data: tuple[dict[str, str], ...]
+    data: tuple[ModelListItem, ...]
 
 
 class ModelsResponse(BaseModel):
@@ -130,10 +140,24 @@ class OpenAICompatibleClient:
 
     async def list_models(self) -> ModelsResponse:
         """Fetch model identifiers while retaining exact response bytes."""
-        response = await self._executor.request(method="GET", path="models")
-        parsed = ModelsWireResponse.model_validate_json(response.content)
-        identifiers = tuple(item["id"] for item in parsed.data if "id" in item)
-        return ModelsResponse(raw=response.content, models=identifiers)
+        raw = await self.fetch_models_raw()
+        return self.parse_models(raw)
+
+    async def fetch_models_raw(
+        self, response_observer: ResponseObserver | None = None
+    ) -> bytes:
+        """Acquire `/models` bytes without parsing the success payload."""
+        response = await self._executor.request(
+            method="GET",
+            path="models",
+            response_observer=response_observer,
+        )
+        return response.content
+
+    def parse_models(self, raw: bytes) -> ModelsResponse:
+        """Parse identifiers from previously preserved `/models` bytes."""
+        parsed = ModelsWireResponse.model_validate_json(raw)
+        return ModelsResponse(raw=raw, models=tuple(item.id for item in parsed.data))
 
     async def chat(self, request: OpenAIChatRequest) -> OpenAIChatResponse:
         """Send an OpenAI-compatible chat request."""

@@ -3,7 +3,7 @@
 from typing import ClassVar
 
 import httpx2
-from pydantic import AliasChoices, BaseModel, ConfigDict, Field, JsonValue
+from pydantic import BaseModel, ConfigDict, Field, JsonValue
 
 from hcx_eval.clients.base import RequestBudget, create_async_client
 from hcx_eval.clients.executor import HttpExecutor
@@ -39,11 +39,12 @@ class NativeV1Result(BaseModel):
 
     model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
     message: ChatMessage
-    stop_reason: str = Field(
-        validation_alias=AliasChoices("stopReason", "finishReason")
-    )
+    stop_reason: str = Field(validation_alias="stopReason")
     input_length: int = Field(validation_alias="inputLength")
     output_length: int = Field(validation_alias="outputLength")
+    v3_finish_reason: None = Field(
+        default=None, validation_alias="finishReason", exclude=True
+    )
 
 
 class NativeV1Response(BaseModel):

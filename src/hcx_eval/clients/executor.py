@@ -1,8 +1,8 @@
 """Budgeted buffered and incremental HTTP execution."""
 
-from typing import ClassVar
+from typing import ClassVar, Final, Protocol
 
-import anyio.lowlevel
+import anyio
 import httpx2
 from pydantic import BaseModel, ConfigDict, JsonValue
 
@@ -15,7 +15,9 @@ from hcx_eval.clients.base import (
 )
 from hcx_eval.clients.sse import ParsedStream, parse_sse_lines
 
-_CLIENT_ERROR = 400
+_CLIENT_ERROR: Final = 400
+_RETRY_BACKOFF_SECONDS: Final[float] = 1.0
+_MAX_RETRY_DELAY_SECONDS: Final[float] = 60.0
 
 
 class _ProviderStatus(BaseModel):
@@ -55,6 +57,7 @@ def _provider_error(response: httpx2.Response, endpoint: str) -> ProviderApiErro
         http_status=response.status_code,
         provider_code=_error_details(response),
         retry_after=response.headers.get("Retry-After"),
+        response_body=response.content,
     )
 
 
@@ -66,16 +69,55 @@ def _retryable(error: ProviderApiError) -> bool:
     }
 
 
+class RetrySleep(Protocol):
+    """Injectable retry wait boundary."""
+
+    async def __call__(self, delay_seconds: float) -> None:
+        """Wait for the chosen retry delay."""
+        ...
+
+
+class ResponseObserver(Protocol):
+    """Synchronous raw response acquisition boundary."""
+
+    def __call__(self, raw: bytes) -> None:
+        """Persist bytes before parsing or final error classification."""
+        ...
+
+
+async def _default_retry_sleep(delay_seconds: float) -> None:
+    await anyio.sleep(delay_seconds)
+
+
+def _retry_delay(retry_after: str | None, attempt: int) -> float:
+    fallback = _RETRY_BACKOFF_SECONDS * (2.0**attempt)
+    if retry_after is None:
+        return min(fallback, _MAX_RETRY_DELAY_SECONDS)
+    try:
+        requested = float(retry_after)
+    except ValueError:
+        return min(fallback, _MAX_RETRY_DELAY_SECONDS)
+    return min(max(requested, 0.0), _MAX_RETRY_DELAY_SECONDS)
+
+
 class HttpExecutor:
     """HTTP execution seam shared by all concrete adapters."""
 
     _client: httpx2.AsyncClient
     _budget: RequestBudget
+    _retry_sleep: RetrySleep
 
-    def __init__(self, *, client: httpx2.AsyncClient, budget: RequestBudget) -> None:
+    def __init__(
+        self,
+        *,
+        client: httpx2.AsyncClient,
+        budget: RequestBudget,
+        retry_sleep: RetrySleep = _default_retry_sleep,
+    ) -> None:
         """Bind a configured client to shared run accounting."""
         self._client = client
         self._budget = budget
+        self._retry_sleep = retry_sleep
 
     async def request(
         self,
@@ -84,6 +126,7 @@ class HttpExecutor:
         path: str,
         estimated_tokens: int = 0,
         json_body: JsonValue | None = None,
+        response_observer: ResponseObserver | None = None,
     ) -> httpx2.Response:
         """Dispatch a buffered request within aggregate ceilings."""
         attempts = self._budget.policy.max_retries + 1
@@ -93,15 +136,20 @@ class HttpExecutor:
             try:
                 response = await self._client.request(method, path, json=json_body)
                 if response.status_code < _CLIENT_ERROR:
+                    if response_observer is not None:
+                        response_observer(response.content)
                     return response
                 error = _provider_error(response, endpoint)
                 if _retryable(error) and attempt + 1 < attempts:
-                    await anyio.lowlevel.checkpoint()
+                    await self._retry_sleep(_retry_delay(error.retry_after, attempt))
                     continue
+                if response_observer is not None:
+                    response_observer(response.content)
                 raise error
             except httpx2.TimeoutException as error:
                 if attempt + 1 < attempts:
-                    await anyio.lowlevel.checkpoint()
+                    delay = _RETRY_BACKOFF_SECONDS * (2.0**attempt)
+                    await self._retry_sleep(min(delay, _MAX_RETRY_DELAY_SECONDS))
                     continue
                 raise ProviderApiError(
                     kind=ErrorKind.TIMEOUT, endpoint=endpoint
@@ -124,23 +172,30 @@ class HttpExecutor:
             )
             try:
                 response = await self._client.send(request, stream=True)
-                try:
-                    if response.status_code >= _CLIENT_ERROR:
-                        _ = await response.aread()
-                        raise _provider_error(response, endpoint)
-                    return await parse_sse_lines(response.aiter_lines())
-                finally:
-                    await response.aclose()
             except httpx2.TimeoutException as error:
                 if attempt + 1 < attempts:
-                    await anyio.lowlevel.checkpoint()
+                    delay = _RETRY_BACKOFF_SECONDS * (2.0**attempt)
+                    await self._retry_sleep(min(delay, _MAX_RETRY_DELAY_SECONDS))
                     continue
                 raise ProviderApiError(
                     kind=ErrorKind.TIMEOUT, endpoint=endpoint
                 ) from error
-            except ProviderApiError as error:
-                if _retryable(error) and attempt + 1 < attempts:
-                    await anyio.lowlevel.checkpoint()
-                    continue
-                raise
+            try:
+                if response.status_code >= _CLIENT_ERROR:
+                    _ = await response.aread()
+                    error = _provider_error(response, endpoint)
+                    if _retryable(error) and attempt + 1 < attempts:
+                        await self._retry_sleep(
+                            _retry_delay(error.retry_after, attempt)
+                        )
+                        continue
+                    raise error
+                try:
+                    return await parse_sse_lines(response.aiter_lines())
+                except httpx2.TimeoutException as error:
+                    raise ProviderApiError(
+                        kind=ErrorKind.TIMEOUT, endpoint=endpoint
+                    ) from error
+            finally:
+                await response.aclose()
         raise AssertionError

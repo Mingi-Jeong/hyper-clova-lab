@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import socket
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import ClassVar
 from urllib.parse import urlsplit, urlunsplit
@@ -90,6 +90,7 @@ class ProviderApiError(RuntimeError):
     http_status: int | None = None
     provider_code: str | None = None
     retry_after: str | None = None
+    response_body: bytes | None = field(default=None, repr=False)
 
     @override
     def __str__(self) -> str:
