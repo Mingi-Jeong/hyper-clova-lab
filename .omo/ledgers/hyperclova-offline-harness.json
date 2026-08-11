@@ -42,5 +42,9 @@
     "status": "completed",
     "scope": "deterministic accuracy, retrieval, citation, JSON Schema, tool argument, safety, latency, and seeded bootstrap metrics"
   },
-  "next_task": "task 9 bounded resumable smoke and generation runners"
+  "task_9": {
+    "status": "completed",
+    "scope": "bounded generation and smoke planning, separate adapter routing, append-only failure evidence, deterministic resume, and dry-run-first CLI"
+  },
+  "next_task": "task 10 precise latency runner"
 }

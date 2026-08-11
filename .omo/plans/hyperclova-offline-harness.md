@@ -12,7 +12,7 @@ Protected inputs are `processed-data/` and
 - [x] 6. Implement model discovery and capability probes (independent security review PASS at `994a1ec`).
 - [x] 7. Build deterministic evaluation cases.
 - [x] 8. Implement scoring metrics.
-- [ ] 9. Implement smoke and baseline generation runners.
+- [x] 9. Implement smoke and baseline generation runners.
 - [ ] 10. Implement precise latency runner.
 - [ ] 11. Implement embeddings and API-tool evaluation.
 - [ ] 12. Add capability-specific generation tracks.
