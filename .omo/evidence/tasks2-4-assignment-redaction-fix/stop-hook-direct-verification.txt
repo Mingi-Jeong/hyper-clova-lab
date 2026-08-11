@@ -1,0 +1,24 @@
+STOP-HOOK DIRECT VERIFICATION
+artifact=.omo/evidence/tasks2-4-assignment-redaction-fix/stop-hook-direct-verification.txt
+scenario=actual writer and manifest boundaries redact env/generic assignment forms
+invocation=uv run pytest -q tests/unit/test_artifacts.py::test_writer_redacts_sensitive_assignments_and_preserves_delimiters tests/unit/test_artifacts.py::test_writer_redacts_assignment_secrets_in_manifest
+..                                                                       [100%]
+2 passed in 0.14s
+scenario=full regression suite
+invocation=uv run pytest -q
+...............................                                          [100%]
+31 passed in 0.30s
+scenario=lint format and strict typing
+invocation=uv run ruff check . && uv run ruff format --check src tests && uv run basedpyright
+All checks passed!
+28 files already formatted
+0 errors, 0 warnings, 0 notes
+scenario=committed patch identity and protected-source inventory
+invocation=git show --quiet HEAD; inline uv run python redaction and build_inventory probe
+commit=1a3c0538adce276f6208cd2d4740bd049560867f subject=fix: redact sensitive assignment values
+direct_redaction_secret_leaks=0
+direct_redaction_idempotent=true
+direct_redaction_context_preserved=true
+protected_inventory=processed-data files=208 sha256=869e3c3db5c8a2f46b377b0739af2adb14ef4e0e22f01b59ab0828aea7253fb6
+protected_inventory=naver-clova-studio-instructions-all-docs files=2 sha256=33efc2ad7f87187b3b667542da874eb4cea88e59d0e2b3c9158837460c48b9a2
+judgment=PASS all claimed scenarios directly reproduced

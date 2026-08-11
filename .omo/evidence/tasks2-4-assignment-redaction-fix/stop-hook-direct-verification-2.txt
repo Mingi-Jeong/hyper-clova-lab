@@ -1,0 +1,19 @@
+EXECUTOR VERIFICATION ATTEMPT 2
+artifact=.omo/evidence/tasks2-4-assignment-redaction-fix/stop-hook-direct-verification-2.txt
+scenario=persisted JSONL and manifest reject quoted, bare, mixed-case, delimiter-adjacent assignment secrets while preserving ordinary content
+invocation=uv run pytest -q tests/unit/test_artifacts.py::test_writer_redacts_sensitive_assignments_and_preserves_delimiters tests/unit/test_artifacts.py::test_writer_redacts_assignment_secrets_in_manifest
+..                                                                       [100%]
+2 passed in 0.14s
+observable=targeted boundary regression must report exactly 2 passed
+scenario=all repository regressions and static quality gates remain green
+invocation=uv run pytest -q; uv run ruff check .; uv run ruff format --check src tests; uv run basedpyright
+...............................                                          [100%]
+31 passed in 0.29s
+All checks passed!
+28 files already formatted
+0 errors, 0 warnings, 0 notes
+observable=31 passed; Ruff all checks passed; 28 files formatted; basedpyright zero findings
+scenario=evidence bundle required files are present and nonempty
+invocation=test -s for README, RED, GREEN, manual driver, full gates, and first stop-hook replay
+observable=all required evidence files nonempty
+judgment=PASS implementation and evidence criteria directly reproduced

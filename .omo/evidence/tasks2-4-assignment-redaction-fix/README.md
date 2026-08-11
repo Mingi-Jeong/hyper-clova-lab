@@ -30,6 +30,13 @@
 - Binary observables: `2 passed`, `31 passed`, lint/format clean, and zero type
   errors/warnings/notes.
 - Artifact: `post-commit-verification.txt`.
+- Scenario: two direct executor stop-hook replays of the persisted boundary
+  regressions, full suite, static gates, evidence presence, implementation
+  identity, and protected inventories.
+- Binary observables: both boundary tests pass, all 31 tests pass, static gates
+  are clean, required artifacts are nonempty, and protected hashes are stable.
+- Artifacts: `stop-hook-direct-verification.txt` and
+  `stop-hook-direct-verification-2.txt`.
 
 ## Manual boundary probe
 
