@@ -58,5 +58,9 @@
     "status": "completed",
     "scope": "probe-gated isolated Thinking, Structured Outputs, Function calling, hash-pinned reviewed PNG vision, and context-limit cells"
   },
-  "next_task": "task 13 synthetic financial safety red-team"
+  "task_13": {
+    "status": "completed",
+    "scope": "seven reviewed synthetic financial risk groups, masked PII persistence, bounded execution, and critical hard gates"
+  },
+  "next_task": "task 14 report generators"
 }

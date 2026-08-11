@@ -16,7 +16,7 @@ Protected inputs are `processed-data/` and
 - [x] 10. Implement precise latency runner.
 - [x] 11. Implement embeddings and API-tool evaluation.
 - [x] 12. Add capability-specific generation tracks.
-- [ ] 13. Add synthetic financial safety red-team.
+- [x] 13. Add synthetic financial safety red-team.
 - [ ] 14. Implement report generators.
 - [ ] 15. Write runbook and verify offline.
 - [ ] 16. User-key live discovery and smoke test (requires user approval and injected key).
