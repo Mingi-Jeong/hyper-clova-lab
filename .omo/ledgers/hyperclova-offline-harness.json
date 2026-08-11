@@ -20,5 +20,17 @@
     "evidence": ".omo/evidence/tasks2-4/, .omo/evidence/tasks2-4-review-fix/, .omo/evidence/tasks2-4-assignment-redaction-fix/, and .omo/evidence/tasks2-4-redaction-policy-fix/",
     "review_fix": "deep-frozen nested JSON plus canonical mapping/free-text/CLI credential redaction"
   },
-  "next_task": 5
+  "task_5": {
+    "status": "completed",
+    "scope": "bounded native v1/v3 and OpenAI-compatible adapters, retry/budget policy, and SSE parsing",
+    "evidence": ".omo/evidence/tasks5-6/, .omo/evidence/tasks5-6-review-fixes/, and .omo/evidence/tasks5-6-security-fix/",
+    "independent_review": "BLOCK at c5a596a: provider-controlled error code can be rendered unredacted; response-body artifact redaction passed"
+  },
+  "task_6": {
+    "status": "completed",
+    "scope": "documented/live model registry merge, raw model discovery, and isolated capability probes",
+    "evidence": ".omo/evidence/tasks5-6/, .omo/evidence/tasks5-6-review-fixes/, and .omo/evidence/tasks5-6-security-fix/",
+    "independent_review": "BLOCK at c5a596a: provider-controlled error code can be rendered unredacted; response-body artifact redaction passed"
+  },
+  "next_task": "provider-code redaction blocker before task 7"
 }

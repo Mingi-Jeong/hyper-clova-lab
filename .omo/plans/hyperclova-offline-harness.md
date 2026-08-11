@@ -8,8 +8,8 @@ Protected inputs are `processed-data/` and
 - [x] 2. Implement validated configuration and secret redaction.
 - [x] 3. Implement source inventory and immutable snapshot hashing.
 - [x] 4. Define schemas and append-safe artifact writer.
-- [ ] 5. Implement native and OpenAI-compatible clients.
-- [ ] 6. Implement model discovery and capability probes.
+- [x] 5. Implement native and OpenAI-compatible clients (latest independent review BLOCK; provider-code redaction fix required).
+- [x] 6. Implement model discovery and capability probes (latest independent review BLOCK; provider-code redaction fix required).
 - [ ] 7. Build deterministic evaluation cases.
 - [ ] 8. Implement scoring metrics.
 - [ ] 9. Implement smoke and baseline generation runners.
@@ -19,3 +19,4 @@ Protected inputs are `processed-data/` and
 - [ ] 13. Add synthetic financial safety red-team.
 - [ ] 14. Implement report generators.
 - [ ] 15. Write runbook and verify offline.
+- [ ] 16. User-key live discovery and smoke test (requires user approval and injected key).
