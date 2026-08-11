@@ -50,5 +50,9 @@
     "status": "completed",
     "scope": "single-clock SSE headers/token/close timing, TTFT/E2E/TPOT/gap metrics, bounded closed-loop and fixed-rate scheduling, warmup labels, and failure-preserving summaries"
   },
-  "next_task": "task 11 embeddings and API-tool evaluation"
+  "task_11": {
+    "status": "completed",
+    "scope": "reviewed pension retrieval benchmark, bounded embedding evaluation with dimension/input validation, and isolated API-tool quality-gain and incremental-latency scoring"
+  },
+  "next_task": "task 12 capability-specific generation tracks"
 }
