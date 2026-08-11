@@ -10,7 +10,7 @@ Protected inputs are `processed-data/` and
 - [x] 4. Define schemas and append-safe artifact writer.
 - [x] 5. Implement native and OpenAI-compatible clients (independent security review PASS at `994a1ec`).
 - [x] 6. Implement model discovery and capability probes (independent security review PASS at `994a1ec`).
-- [ ] 7. Build deterministic evaluation cases.
+- [x] 7. Build deterministic evaluation cases.
 - [ ] 8. Implement scoring metrics.
 - [ ] 9. Implement smoke and baseline generation runners.
 - [ ] 10. Implement precise latency runner.

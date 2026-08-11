@@ -32,5 +32,11 @@
     "evidence": ".omo/evidence/tasks5-6/, .omo/evidence/tasks5-6-review-fixes/, and .omo/evidence/tasks5-6-security-fix/",
     "independent_review": "PASS at 994a1ec: provider-controlled error codes and discovery failure artifacts are redacted"
   },
-  "next_task": "task 7 deterministic evaluation cases"
+  "task_7": {
+    "status": "completed",
+    "scope": "strict structured CSV parsing, grouped deterministic cases, conflict-safe JSONL, and offline build-cases CLI",
+    "case_count": 352,
+    "cases_sha256": "d65159c3775da26eb8489a60c9aa663f9fe70b3d8d4237da0bd1a0e8cbe2427d"
+  },
+  "next_task": "task 8 deterministic scoring metrics"
 }
