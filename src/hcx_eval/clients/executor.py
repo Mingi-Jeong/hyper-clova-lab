@@ -1,0 +1,146 @@
+"""Budgeted buffered and incremental HTTP execution."""
+
+from typing import ClassVar
+
+import anyio.lowlevel
+import httpx2
+from pydantic import BaseModel, ConfigDict, JsonValue
+
+from hcx_eval.clients.base import (
+    ErrorKind,
+    ProviderApiError,
+    RequestBudget,
+    classify_status,
+    sanitized_url,
+)
+from hcx_eval.clients.sse import ParsedStream, parse_sse_lines
+
+_CLIENT_ERROR = 400
+
+
+class _ProviderStatus(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    code: str
+    message: str
+
+
+class _NativeError(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    status: _ProviderStatus
+
+
+class _CompatibleError(BaseModel):
+    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
+    error: _ProviderStatus
+
+
+def _error_details(response: httpx2.Response) -> str | None:
+    try:
+        native = _NativeError.model_validate_json(response.content)
+    except ValueError:
+        try:
+            compatible = _CompatibleError.model_validate_json(response.content)
+        except ValueError:
+            return None
+        else:
+            return compatible.error.code
+    else:
+        return native.status.code
+
+
+def _provider_error(response: httpx2.Response, endpoint: str) -> ProviderApiError:
+    return ProviderApiError(
+        kind=classify_status(response.status_code),
+        endpoint=endpoint,
+        http_status=response.status_code,
+        provider_code=_error_details(response),
+        retry_after=response.headers.get("Retry-After"),
+    )
+
+
+def _retryable(error: ProviderApiError) -> bool:
+    return error.kind in {
+        ErrorKind.RATE_LIMIT,
+        ErrorKind.SERVER,
+        ErrorKind.TIMEOUT,
+    }
+
+
+class HttpExecutor:
+    """HTTP execution seam shared by all concrete adapters."""
+
+    _client: httpx2.AsyncClient
+    _budget: RequestBudget
+
+    def __init__(self, *, client: httpx2.AsyncClient, budget: RequestBudget) -> None:
+        """Bind a configured client to shared run accounting."""
+        self._client = client
+        self._budget = budget
+
+    async def request(
+        self,
+        *,
+        method: str,
+        path: str,
+        estimated_tokens: int = 0,
+        json_body: JsonValue | None = None,
+    ) -> httpx2.Response:
+        """Dispatch a buffered request within aggregate ceilings."""
+        attempts = self._budget.policy.max_retries + 1
+        endpoint = sanitized_url(str(self._client.base_url.join(path)))
+        for attempt in range(attempts):
+            self._budget.reserve(estimated_tokens if attempt == 0 else 0)
+            try:
+                response = await self._client.request(method, path, json=json_body)
+                if response.status_code < _CLIENT_ERROR:
+                    return response
+                error = _provider_error(response, endpoint)
+                if _retryable(error) and attempt + 1 < attempts:
+                    await anyio.lowlevel.checkpoint()
+                    continue
+                raise error
+            except httpx2.TimeoutException as error:
+                if attempt + 1 < attempts:
+                    await anyio.lowlevel.checkpoint()
+                    continue
+                raise ProviderApiError(
+                    kind=ErrorKind.TIMEOUT, endpoint=endpoint
+                ) from error
+        raise AssertionError
+
+    async def stream(
+        self, *, path: str, estimated_tokens: int, json_body: JsonValue
+    ) -> ParsedStream:
+        """Consume SSE blocks incrementally within aggregate ceilings."""
+        attempts = self._budget.policy.max_retries + 1
+        endpoint = sanitized_url(str(self._client.base_url.join(path)))
+        for attempt in range(attempts):
+            self._budget.reserve(estimated_tokens if attempt == 0 else 0)
+            request = self._client.build_request(
+                "POST",
+                path,
+                json=json_body,
+                headers={"Accept": "text/event-stream"},
+            )
+            try:
+                response = await self._client.send(request, stream=True)
+                try:
+                    if response.status_code >= _CLIENT_ERROR:
+                        _ = await response.aread()
+                        raise _provider_error(response, endpoint)
+                    return await parse_sse_lines(response.aiter_lines())
+                finally:
+                    await response.aclose()
+            except httpx2.TimeoutException as error:
+                if attempt + 1 < attempts:
+                    await anyio.lowlevel.checkpoint()
+                    continue
+                raise ProviderApiError(
+                    kind=ErrorKind.TIMEOUT, endpoint=endpoint
+                ) from error
+            except ProviderApiError as error:
+                if _retryable(error) and attempt + 1 < attempts:
+                    await anyio.lowlevel.checkpoint()
+                    continue
+                raise
+        raise AssertionError

@@ -5,8 +5,9 @@ from typing import ClassVar
 import httpx2
 from pydantic import AliasChoices, BaseModel, ConfigDict, Field, JsonValue
 
-from hcx_eval.clients.base import HttpExecutor, RequestBudget, create_async_client
-from hcx_eval.clients.sse import ParsedStream, parse_sse
+from hcx_eval.clients.base import RequestBudget, create_async_client
+from hcx_eval.clients.executor import HttpExecutor
+from hcx_eval.clients.sse import ParsedStream
 from hcx_eval.clients.types import ChatMessage
 
 
@@ -85,11 +86,8 @@ class NativeV1Client:
 
     async def chat_stream(self, request: NativeV1ChatRequest) -> ParsedStream:
         """Parse a native v1 SSE chat stream."""
-        response = await self._executor.request(
-            method="POST",
+        return await self._executor.stream(
             path=f"v1/chat-completions/{request.model}",
             estimated_tokens=request.max_tokens,
             json_body=request.wire_body(),
-            headers={"Accept": "text/event-stream"},
         )
-        return parse_sse(response.content)

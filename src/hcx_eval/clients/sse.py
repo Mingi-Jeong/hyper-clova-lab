@@ -12,7 +12,7 @@ from typing_extensions import override
 _JSON: TypeAdapter[JsonValue] = TypeAdapter(JsonValue)
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import AsyncIterator, Callable
 
 
 class _Message(BaseModel):
@@ -115,4 +115,28 @@ def parse_sse(
                 event=event_name, received_at=received_at, data=data, content=content
             )
         )
+    return ParsedStream(events=tuple(events), first_content_at=first_content_at)
+
+
+async def parse_sse_lines(
+    lines: AsyncIterator[str], *, clock: Callable[[], float] = time.monotonic
+) -> ParsedStream:
+    """Parse events as blank-line-delimited blocks arrive from the wire."""
+    events: list[SseEvent] = []
+    first_content_at: float | None = None
+    block: list[str] = []
+    async for line in lines:
+        if line:
+            block.append(line)
+            continue
+        parsed = parse_sse("\n".join(block).encode(), clock=clock)
+        block.clear()
+        events.extend(parsed.events)
+        if first_content_at is None:
+            first_content_at = parsed.first_content_at
+    if block:
+        parsed = parse_sse("\n".join(block).encode(), clock=clock)
+        events.extend(parsed.events)
+        if first_content_at is None:
+            first_content_at = parsed.first_content_at
     return ParsedStream(events=tuple(events), first_content_at=first_content_at)

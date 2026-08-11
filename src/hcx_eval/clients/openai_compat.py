@@ -7,13 +7,13 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from hcx_eval.clients.base import (
     ApiFamily,
-    HttpExecutor,
     RequestBudget,
     RequestPlan,
     create_async_client,
     sanitized_url,
 )
-from hcx_eval.clients.sse import ParsedStream, parse_sse
+from hcx_eval.clients.executor import HttpExecutor
+from hcx_eval.clients.sse import ParsedStream
 from hcx_eval.clients.types import ChatMessage
 
 
@@ -155,11 +155,8 @@ class OpenAICompatibleClient:
     async def chat_stream(self, request: OpenAIChatRequest) -> ParsedStream:
         """Parse an OpenAI-compatible SSE chat stream."""
         streaming_request = request.model_copy(update={"stream": True})
-        response = await self._executor.request(
-            method="POST",
+        return await self._executor.stream(
             path="chat/completions",
             estimated_tokens=request.max_tokens or 0,
             json_body=streaming_request.model_dump(exclude_none=True),
-            headers={"Accept": "text/event-stream"},
         )
-        return parse_sse(response.content)

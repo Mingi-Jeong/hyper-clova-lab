@@ -8,10 +8,8 @@ from enum import StrEnum
 from typing import ClassVar
 from urllib.parse import urlsplit, urlunsplit
 
-import anyio
-import anyio.lowlevel
 import httpx2
-from pydantic import BaseModel, ConfigDict, Field, JsonValue
+from pydantic import BaseModel, ConfigDict, Field
 from typing_extensions import override
 
 _CLIENT_ERROR = 400
@@ -176,36 +174,6 @@ def create_async_client(
     )
 
 
-class _ProviderStatus(BaseModel):
-    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
-    code: str
-    message: str
-
-
-class _NativeError(BaseModel):
-    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
-    status: _ProviderStatus
-
-
-class _CompatibleError(BaseModel):
-    model_config: ClassVar[ConfigDict] = ConfigDict(frozen=True, extra="allow")
-    error: _ProviderStatus
-
-
-def _error_details(response: httpx2.Response) -> tuple[str | None, str | None]:
-    try:
-        native = _NativeError.model_validate_json(response.content)
-    except ValueError:
-        try:
-            compatible = _CompatibleError.model_validate_json(response.content)
-        except ValueError:
-            return None, None
-        else:
-            return compatible.error.code, compatible.error.message
-    else:
-        return native.status.code, native.status.message
-
-
 def classify_status(status: int) -> ErrorKind:
     """Map HTTP status to a stable error category."""
     if status in {401, 403}:
@@ -219,59 +187,3 @@ def classify_status(status: int) -> ErrorKind:
     if status >= _SERVER_ERROR:
         return ErrorKind.SERVER
     return ErrorKind.UNKNOWN
-
-
-class HttpExecutor:
-    """Budgeted HTTP execution seam shared by all concrete adapters."""
-
-    _client: httpx2.AsyncClient
-    _budget: RequestBudget
-
-    def __init__(self, *, client: httpx2.AsyncClient, budget: RequestBudget) -> None:
-        """Bind a configured client to shared run accounting."""
-        self._client = client
-        self._budget = budget
-
-    async def request(
-        self,
-        *,
-        method: str,
-        path: str,
-        estimated_tokens: int = 0,
-        json_body: JsonValue | None = None,
-        headers: dict[str, str] | None = None,
-    ) -> httpx2.Response:
-        """Dispatch within both retry and aggregate run ceilings."""
-        attempts = self._budget.policy.max_retries + 1
-        endpoint = sanitized_url(str(self._client.base_url.join(path)))
-        for attempt in range(attempts):
-            self._budget.reserve(estimated_tokens if attempt == 0 else 0)
-            try:
-                response = await self._client.request(
-                    method, path, json=json_body, headers=headers
-                )
-            except httpx2.TimeoutException as error:
-                if attempt + 1 < attempts:
-                    await anyio.lowlevel.checkpoint()
-                    continue
-                raise ProviderApiError(
-                    kind=ErrorKind.TIMEOUT, endpoint=endpoint
-                ) from error
-            if response.status_code < _CLIENT_ERROR:
-                return response
-            retryable = (
-                response.status_code in {408, _RATE_LIMIT}
-                or response.status_code >= _SERVER_ERROR
-            )
-            if retryable and attempt + 1 < attempts:
-                await anyio.lowlevel.checkpoint()
-                continue
-            provider_code, _ = _error_details(response)
-            raise ProviderApiError(
-                kind=classify_status(response.status_code),
-                endpoint=endpoint,
-                http_status=response.status_code,
-                provider_code=provider_code,
-                retry_after=response.headers.get("Retry-After"),
-            )
-        raise AssertionError
