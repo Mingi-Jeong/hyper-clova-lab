@@ -1,0 +1,8 @@
+{
+  "plan": ".omo/plans/hyperclova-offline-harness.md",
+  "task_1": {
+    "status": "completed",
+    "scope": "safe scaffold, Git baseline, and offline CLI"
+  },
+  "next_task": 2
+}

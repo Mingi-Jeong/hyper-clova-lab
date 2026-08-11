@@ -1,0 +1,12 @@
+{
+  "schema_version": 2,
+  "active_work_id": "hyperclova-offline-harness",
+  "works": {
+    "hyperclova-offline-harness": {
+      "work_id": "hyperclova-offline-harness",
+      "active_plan": ".omo/plans/hyperclova-offline-harness.md",
+      "plan_name": "HyperCLOVA X offline harness",
+      "status": "active"
+    }
+  }
+}

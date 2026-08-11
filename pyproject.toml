@@ -1,0 +1,94 @@
+[project]
+name = "hcx-eval"
+version = "0.1.0"
+description = "Offline-first HyperCLOVA X financial evaluation harness"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "httpx2[http2,brotli,zstd]>=0.1.0",
+    "jsonschema>=4.23.0",
+    "matplotlib>=3.9.0",
+    "numpy>=2.0.0",
+    "openai>=1.0.0",
+    "polars>=1.0.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "PyYAML>=6.0.0",
+    "rich>=13.0.0",
+    "scikit-learn>=1.5.0",
+    "scipy>=1.13.0",
+    "seaborn>=0.13.0",
+    "typer>=0.12.0",
+]
+
+[project.scripts]
+hcx-eval = "hcx_eval.cli:app"
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.21.0",
+    "pytest>=8.0.0",
+    "respx>=0.21.0",
+    "ruff>=0.8.0",
+]
+
+[build-system]
+requires = ["hatchling>=1.25.0"]
+build-backend = "hatchling.build"
+
+[tool.basedpyright]
+typeCheckingMode = "all"
+pythonVersion = "3.11"
+pythonPlatform = "All"
+include = ["src", "tests"]
+exclude = ["**/__pycache__", "**/.venv", "**/build", "**/dist"]
+reportUnusedCallResult = "warning"
+reportUnnecessaryTypeIgnoreComment = "error"
+reportUnusedVariable = "error"
+reportMissingParameterType = "error"
+reportPrivateUsage = "error"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "COM812",
+    "CPY001",
+    "D203",
+    "D213",
+    "D103",
+    "D104",
+    "FBT001",
+    "FBT002",
+    "FIX002",
+    "ISC001",
+    "TD002",
+    "TD003",
+]
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["ARG", "D", "PLR2004", "S101", "SLF001"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["typer.Argument", "typer.Option"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+addopts = ["-ra", "--strict-config", "--strict-markers"]
+filterwarnings = ["error"]
