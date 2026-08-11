@@ -1,0 +1,27 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____________ test_writer_creates_manifest_and_normalized_csv_once _____________
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-23/test_writer_creates_manifest_a0')
+
+    def test_writer_creates_manifest_and_normalized_csv_once(tmp_path: Path) -> None:
+        # Given: a fresh run with a manifest and rectangular normalized rows.
+        writer = SegmentedJsonlWriter(tmp_path / "results", "run-1")
+        manifest = FixtureManifest(run_id="run-1")
+
+        # When: both immutable artifacts are created.
+        manifest_path = writer.create_manifest(manifest)
+>       csv_path = writer.write_normalized_csv(
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+            "scores.csv",
+            (
+                {"request_id": "one", "score": 1.0},
+                {"request_id": "two", "score": 0.5},
+            ),
+        )
+E       AttributeError: 'SegmentedJsonlWriter' object has no attribute 'write_normalized_csv'
+
+tests/unit/test_artifacts.py:66: AttributeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_artifacts.py::test_writer_creates_manifest_and_normalized_csv_once
+1 failed in 0.14s

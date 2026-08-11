@@ -1,0 +1,41 @@
+ISC003 [*] Explicitly concatenated string should be implicitly concatenated
+  --> src/hcx_eval/discovery/docs_registry.py:13:5
+   |
+12 |   _MODEL_PATTERN: Final = re.compile(
+13 | /     r"(?<![A-Za-z0-9])(?:HCX(?:-DASH)?-\d{3}|bge-m3|"
+14 | |     + r"clir-(?:emb|sts)-dolphin)(?![A-Za-z0-9])",
+   | |_________________________________________________^
+15 |       re.IGNORECASE,
+16 |   )
+   |
+help: Remove redundant '+' operator to implicitly concatenate
+   |
+13 |     r"(?<![A-Za-z0-9])(?:HCX(?:-DASH)?-\d{3}|bge-m3|"
+   -     + r"clir-(?:emb|sts)-dolphin)(?![A-Za-z0-9])",
+14 +      r"clir-(?:emb|sts)-dolphin)(?![A-Za-z0-9])",
+15 |     re.IGNORECASE,
+   |
+
+TC002 Move third-party import `pydantic.JsonValue` into a type-checking block
+ --> tests/unit/test_docs_registry.py:5:22
+  |
+4 | import pytest
+5 | from pydantic import JsonValue
+  |                      ^^^^^^^^^
+6 |
+7 | from hcx_eval.discovery.docs_registry import DocsSnapshotError, parse_docs_snapshot
+  |
+help: Move into type-checking block
+
+TC002 Move third-party import `pydantic.JsonValue` into a type-checking block
+ --> tests/unit/test_security.py:1:22
+  |
+1 | from pydantic import JsonValue
+  |                      ^^^^^^^^^
+2 |
+3 | from hcx_eval.security import REDACTED, redact
+  |
+help: Move into type-checking block
+
+Found 3 errors.
+[*] 1 fixable with the `--fix` option (2 hidden fixes can be enabled with the `--unsafe-fixes` option).

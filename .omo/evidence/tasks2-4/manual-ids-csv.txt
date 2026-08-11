@@ -1,0 +1,8 @@
+{
+  "run_id": "run-358e38af-21f2-5372-bdc8-522b3bd950bb",
+  "request_id": "09e0ca86-b50a-51be-8a0f-f3dbb33d3fc8",
+  "csv_lines": [
+    "request_id,score",
+    "09e0ca86-b50a-51be-8a0f-f3dbb33d3fc8,1.0"
+  ]
+}

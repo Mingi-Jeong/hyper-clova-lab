@@ -1,0 +1,445 @@
+D105 Missing docstring in magic method
+  --> src/hcx_eval/artifacts/writer.py:35:9
+   |
+33 |     reason: str
+34 |
+35 |     def __str__(self) -> str:
+   |         ^^^^^^^
+36 |         return f"unsafe artifact operation at {self.path}: {self.reason}"
+   |
+
+D107 Missing docstring in `__init__`
+  --> src/hcx_eval/artifacts/writer.py:42:9
+   |
+40 |     """Append records into immutable, interruption-tolerant JSONL segments."""
+41 |
+42 |     def __init__(self, root: Path, run_id: str, *, max_records: int = 1000) -> None:
+   |         ^^^^^^^^
+43 |         resolved_root = root.resolve()
+44 |         if any(part in _PROTECTED_NAMES for part in resolved_root.parts):
+   |
+
+PERF401 Use `list.extend` to create a transformed list
+  --> src/hcx_eval/artifacts/writer.py:77:17
+   |
+75 |         try:
+76 |             for line in raw.splitlines():
+77 |                 records.append(_JSON_OBJECT.validate_json(line))
+   |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+78 |         except ValueError:
+79 |             return [], False
+   |
+help: Replace for loop with list.extend
+
+E501 Line too long (91 > 88)
+   --> src/hcx_eval/artifacts/writer.py:111:89
+    |
+109 |             for segment in segments:
+110 |                 records, valid = self._records(segment)
+111 |                 if valid and any(item.get("request_id") == request_id for item in records):
+    |                                                                                         ^^^
+112 |                     raise ArtifactError(path=segment, reason="duplicate request_id")
+113 |                 if segment == segments[-1]:
+    |
+
+E501 Line too long (89 > 88)
+   --> src/hcx_eval/artifacts/writer.py:136:89
+    |
+134 |     def create_manifest(self, manifest: BaseModel) -> Path:
+135 |         """Create the immutable run manifest exactly once."""
+136 |         payload = manifest.model_dump_json(indent=2, exclude_none=False).encode() + b"\n"
+    |                                                                                         ^
+137 |         return self._write_once(self._run_root / "manifest.json", payload)
+    |
+
+E501 Line too long (91 > 88)
+   --> src/hcx_eval/artifacts/writer.py:156:89
+    |
+154 |                 )
+155 |             except FileExistsError as error:
+156 |                 raise ArtifactError(path=path, reason="artifact already exists") from error
+    |                                                                                         ^^^
+157 |             try:
+158 |                 view = memoryview(payload)
+    |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/config.py:32:7
+   |
+31 | @dataclass(frozen=True, slots=True)
+32 | class ConfigLoadError(ValueError):
+   |       ^^^^^^^^^^^^^^^
+33 |     path: Path
+34 |     reason: str
+   |
+
+D105 Missing docstring in magic method
+  --> src/hcx_eval/config.py:36:9
+   |
+34 |     reason: str
+35 |
+36 |     def __str__(self) -> str:
+   |         ^^^^^^^
+37 |         return f"cannot load configuration {self.path}: {self.reason}"
+   |
+
+D102 Missing docstring in public method
+  --> src/hcx_eval/config.py:64:9
+   |
+63 |     @model_validator(mode="after")
+64 |     def validate_execution_contract(self) -> Self:
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |         if self.execute and self.clova_studio_api_key is None:
+66 |             raise ValueError("execution requires an API key")
+   |
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/config.py:66:19
+   |
+64 |     def validate_execution_contract(self) -> Self:
+65 |         if self.execute and self.clova_studio_api_key is None:
+66 |             raise ValueError("execution requires an API key")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+67 |         if self.execute and self.max_requests_per_run <= 0:
+68 |             raise ValueError("execution requires a positive request budget")
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/config.py:66:30
+   |
+64 |     def validate_execution_contract(self) -> Self:
+65 |         if self.execute and self.clova_studio_api_key is None:
+66 |             raise ValueError("execution requires an API key")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+67 |         if self.execute and self.max_requests_per_run <= 0:
+68 |             raise ValueError("execution requires a positive request budget")
+   |
+help: Assign to variable; remove string literal
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/config.py:68:19
+   |
+66 |             raise ValueError("execution requires an API key")
+67 |         if self.execute and self.max_requests_per_run <= 0:
+68 |             raise ValueError("execution requires a positive request budget")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+69 |         if self.execute and self.max_tokens_per_run <= 0:
+70 |             raise ValueError("execution requires a positive token budget")
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/config.py:68:30
+   |
+66 |             raise ValueError("execution requires an API key")
+67 |         if self.execute and self.max_requests_per_run <= 0:
+68 |             raise ValueError("execution requires a positive request budget")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+69 |         if self.execute and self.max_tokens_per_run <= 0:
+70 |             raise ValueError("execution requires a positive token budget")
+   |
+help: Assign to variable; remove string literal
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/config.py:70:19
+   |
+68 |             raise ValueError("execution requires a positive request budget")
+69 |         if self.execute and self.max_tokens_per_run <= 0:
+70 |             raise ValueError("execution requires a positive token budget")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+71 |         return self
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/config.py:70:30
+   |
+68 |             raise ValueError("execution requires a positive request budget")
+69 |         if self.execute and self.max_tokens_per_run <= 0:
+70 |             raise ValueError("execution requires a positive token budget")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+71 |         return self
+   |
+help: Assign to variable; remove string literal
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/datasets/inventory.py:11:7
+   |
+10 | @dataclass(frozen=True, slots=True)
+11 | class InventoryError(ValueError):
+   |       ^^^^^^^^^^^^^^
+12 |     path: Path
+13 |     reason: str
+   |
+
+D105 Missing docstring in magic method
+  --> src/hcx_eval/datasets/inventory.py:15:9
+   |
+13 |     reason: str
+14 |
+15 |     def __str__(self) -> str:
+   |         ^^^^^^^
+16 |         return f"cannot inventory {self.path}: {self.reason}"
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/datasets/inventory.py:19:7
+   |
+19 | class InventoryEntry(BaseModel):
+   |       ^^^^^^^^^^^^^^
+20 |     model_config = ConfigDict(frozen=True)
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/datasets/inventory.py:27:7
+   |
+27 | class SourceInventory(BaseModel):
+   |       ^^^^^^^^^^^^^^^
+28 |     model_config = ConfigDict(frozen=True)
+   |
+
+F401 [*] `json` imported but unused
+ --> src/hcx_eval/discovery/docs_registry.py:4:8
+  |
+3 | import hashlib
+4 | import json
+  |        ^^^^
+5 | import re
+6 | from dataclasses import dataclass
+  |
+help: Remove unused import: `json`
+  |
+3 | import hashlib
+  - import json
+4 | import re
+  |
+
+F401 [*] `pydantic.TypeAdapter` imported but unused
+  --> src/hcx_eval/discovery/docs_registry.py:10:52
+   |
+ 8 | from typing import Final
+ 9 |
+10 | from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+   |                                                    ^^^^^^^^^^^
+11 |
+12 | _MODEL_PATTERN: Final = re.compile(
+   |
+help: Remove unused import: `pydantic.TypeAdapter`
+   |
+9  |
+   - from pydantic import BaseModel, ConfigDict, Field, TypeAdapter, ValidationError
+10 + from pydantic import BaseModel, ConfigDict, Field, ValidationError
+11 |
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/discovery/docs_registry.py:21:7
+   |
+20 | @dataclass(frozen=True, slots=True)
+21 | class DocsSnapshotError(ValueError):
+   |       ^^^^^^^^^^^^^^^^^
+22 |     path: Path
+23 |     reason: str
+   |
+
+D105 Missing docstring in magic method
+  --> src/hcx_eval/discovery/docs_registry.py:25:9
+   |
+23 |     reason: str
+24 |
+25 |     def __str__(self) -> str:
+   |         ^^^^^^^
+26 |         return f"cannot parse documentation snapshot {self.path}: {self.reason}"
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/discovery/docs_registry.py:29:7
+   |
+29 | class SnapshotDocument(BaseModel):
+   |       ^^^^^^^^^^^^^^^^
+30 |     model_config = ConfigDict(frozen=True)
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/discovery/docs_registry.py:41:7
+   |
+41 | class SnapshotEnvelope(BaseModel):
+   |       ^^^^^^^^^^^^^^^^
+42 |     model_config = ConfigDict(frozen=True)
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/discovery/docs_registry.py:53:7
+   |
+53 | class DocumentedModel(BaseModel):
+   |       ^^^^^^^^^^^^^^^
+54 |     model_config = ConfigDict(frozen=True)
+   |
+
+D101 Missing docstring in public class
+  --> src/hcx_eval/discovery/docs_registry.py:63:7
+   |
+63 | class DocsRegistry(BaseModel):
+   |       ^^^^^^^^^^^^
+64 |     model_config = ConfigDict(frozen=True)
+   |
+
+D102 Missing docstring in public method
+  --> src/hcx_eval/schemas/manifest.py:34:9
+   |
+33 |     @field_serializer("invocation")
+34 |     def serialize_invocation(self, invocation: str) -> str:
+   |         ^^^^^^^^^^^^^^^^^^^^
+35 |         parts = invocation.split()
+36 |         redacted: list[str] = []
+   |
+
+D102 Missing docstring in public method
+  --> src/hcx_eval/schemas/results.py:31:9
+   |
+29 |     @field_validator("payload", "headers", mode="before")
+30 |     @classmethod
+31 |     def redact_secrets(cls, value: JsonValue) -> JsonValue:
+   |         ^^^^^^^^^^^^^^
+32 |         return redact(value)
+   |
+
+D102 Missing docstring in public method
+  --> src/hcx_eval/schemas/results.py:60:9
+   |
+59 |     @model_validator(mode="after")
+60 |     def validate_chronology(self) -> Self:
+   |         ^^^^^^^^^^^^^^^^^^^
+61 |         if self.response_headers_ms is not None and self.response_headers_ms > self.e2e_ms:
+62 |             raise ValueError("response headers cannot arrive after request completion")
+   |
+
+E501 Line too long (91 > 88)
+  --> src/hcx_eval/schemas/results.py:61:89
+   |
+59 |     @model_validator(mode="after")
+60 |     def validate_chronology(self) -> Self:
+61 |         if self.response_headers_ms is not None and self.response_headers_ms > self.e2e_ms:
+   |                                                                                         ^^^
+62 |             raise ValueError("response headers cannot arrive after request completion")
+63 |         if self.ttft_ms is not None and self.ttft_ms > self.e2e_ms:
+   |
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/schemas/results.py:62:19
+   |
+60 |     def validate_chronology(self) -> Self:
+61 |         if self.response_headers_ms is not None and self.response_headers_ms > self.e2e_ms:
+62 |             raise ValueError("response headers cannot arrive after request completion")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+63 |         if self.ttft_ms is not None and self.ttft_ms > self.e2e_ms:
+64 |             raise ValueError("first token cannot arrive after request completion")
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/schemas/results.py:62:30
+   |
+60 |     def validate_chronology(self) -> Self:
+61 |         if self.response_headers_ms is not None and self.response_headers_ms > self.e2e_ms:
+62 |             raise ValueError("response headers cannot arrive after request completion")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+63 |         if self.ttft_ms is not None and self.ttft_ms > self.e2e_ms:
+64 |             raise ValueError("first token cannot arrive after request completion")
+   |
+help: Assign to variable; remove string literal
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/schemas/results.py:64:19
+   |
+62 |             raise ValueError("response headers cannot arrive after request completion")
+63 |         if self.ttft_ms is not None and self.ttft_ms > self.e2e_ms:
+64 |             raise ValueError("first token cannot arrive after request completion")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |         return self
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/schemas/results.py:64:30
+   |
+62 |             raise ValueError("response headers cannot arrive after request completion")
+63 |         if self.ttft_ms is not None and self.ttft_ms > self.e2e_ms:
+64 |             raise ValueError("first token cannot arrive after request completion")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+65 |         return self
+   |
+help: Assign to variable; remove string literal
+
+D102 Missing docstring in public method
+  --> src/hcx_eval/schemas/results.py:79:9
+   |
+78 |     @model_validator(mode="after")
+79 |     def validate_total(self) -> Self:
+   |         ^^^^^^^^^^^^^^
+80 |         components = (
+81 |             self.prompt_tokens + self.completion_tokens + self.thinking_tokens
+   |
+
+TRY003 Avoid specifying long messages outside the exception class
+  --> src/hcx_eval/schemas/results.py:84:19
+   |
+82 |         )
+83 |         if self.total_tokens != components:
+84 |             raise ValueError("total tokens must equal all token components")
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+85 |         return self
+   |
+
+EM101 Exception must not use a string literal, assign to variable first
+  --> src/hcx_eval/schemas/results.py:84:30
+   |
+82 |         )
+83 |         if self.total_tokens != components:
+84 |             raise ValueError("total tokens must equal all token components")
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+85 |         return self
+   |
+help: Assign to variable; remove string literal
+
+D102 Missing docstring in public method
+   --> src/hcx_eval/schemas/results.py:117:9
+    |
+115 |     @field_validator("response_raw", mode="before")
+116 |     @classmethod
+117 |     def redact_response(cls, value: JsonValue) -> JsonValue:
+    |         ^^^^^^^^^^^^^^^
+118 |         return redact(value)
+    |
+
+INP001 File `tests/contract/test_source_inventory.py` is part of an implicit namespace package. Add an `__init__.py`.
+--> tests/contract/test_source_inventory.py:1:1
+
+PT006 Wrong type passed to first argument of `pytest.mark.parametrize`; expected `tuple`
+  --> tests/unit/test_artifacts.py:55:5
+   |
+54 | @pytest.mark.parametrize(
+55 |     "root,run_id",
+   |     ^^^^^^^^^^^^^
+56 |     [(Path("processed-data"), "run"), (Path("results"), "../processed-data")],
+57 | )
+   |
+help: Use a `tuple` for the first argument
+
+PT006 Wrong type passed to first argument of `pytest.mark.parametrize`; expected `tuple`
+  --> tests/unit/test_config.py:23:26
+   |
+23 | @pytest.mark.parametrize("request_budget,token_budget", [(0, 1), (1, 0)])
+   |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+24 | def test_settings_reject_execution_without_positive_budgets(
+25 |     tmp_path: Path, request_budget: int, token_budget: int
+   |
+help: Use a `tuple` for the first argument
+
+PT011 `pytest.raises(ValueError)` is too broad, set the `match` parameter or use a more specific exception
+  --> tests/unit/test_config.py:90:24
+   |
+89 |     # When / Then: the malformed boundary is rejected.
+90 |     with pytest.raises(ValueError):
+   |                        ^^^^^^^^^^
+91 |         load_settings(config_path)
+   |
+
+Found 43 errors.
+[*] 2 fixable with the `--fix` option (8 hidden fixes can be enabled with the `--unsafe-fixes` option).

@@ -1,0 +1,4 @@
+discovery_sources:
+  - official_snapshot
+  - live_models_endpoint
+preserve_documented_unavailable: true

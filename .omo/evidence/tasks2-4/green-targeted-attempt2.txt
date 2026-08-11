@@ -1,0 +1,212 @@
+.................F.F..                                                   [100%]
+=================================== FAILURES ===================================
+__________ test_writer_rotates_segments_and_rejects_duplicate_records __________
+
+self = <contextlib._GeneratorContextManager object at 0x75c8c6d425d0>
+typ = <class 'hcx_eval.artifacts.writer.ArtifactError'>
+value = ArtifactError(path=PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_rotates_segments_a0/results/run-1/raw/segment-000001.jsonl'), reason='duplicate request_id')
+traceback = <traceback object at 0x75c8c6d58140>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:158:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/hcx_eval/artifacts/writer.py:60: in _locked
+    yield
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <hcx_eval.artifacts.writer.SegmentedJsonlWriter object at 0x75c8c6d43b90>
+record = {'request_id': 'one', 'value': 3}
+
+    def append(
+        self, record: BaseModel | Mapping[str, JsonValue]
+    ) -> Path:
+        """Append one redacted record, rotating rather than repairing bad tails."""
+        if isinstance(record, BaseModel):
+            parsed = _JSON_OBJECT.validate_python(record.model_dump(mode="json"))
+        else:
+            parsed = _JSON_OBJECT.validate_python(dict(record))
+        safe_record = redact_mapping(parsed)
+        request_id = safe_record.get("request_id")
+        if not isinstance(request_id, str) or not request_id:
+            raise ArtifactError(path=self._run_root, reason="request_id is required")
+        encoded = (
+            json.dumps(
+                safe_record,
+                ensure_ascii=False,
+                separators=(",", ":"),
+                sort_keys=True,
+            ).encode()
+            + b"\n"
+        )
+
+        with self._locked():
+            self._raw_root.mkdir(parents=True, exist_ok=True)
+            segments = self._segments()
+            last_records: list[dict[str, JsonValue]] = []
+            last_valid = False
+            for segment in segments:
+                records, valid = self._records(segment)
+                if valid and any(item.get("request_id") == request_id for item in records):
+>                   raise ArtifactError(path=segment, reason="duplicate request_id")
+E                   hcx_eval.artifacts.writer.ArtifactError: unsafe artifact operation at /tmp/pytest-of-ubuntu/pytest-19/test_writer_rotates_segments_a0/results/run-1/raw/segment-000001.jsonl: duplicate request_id
+
+src/hcx_eval/artifacts/writer.py:110: ArtifactError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_rotates_segments_a0')
+
+    def test_writer_rotates_segments_and_rejects_duplicate_records(tmp_path: Path) -> None:
+        # Given: a writer limited to one record per segment.
+        writer = SegmentedJsonlWriter(tmp_path / "results", "run-1", max_records=1)
+
+        # When: two distinct records are appended.
+        first = writer.append({"request_id": "one", "value": 1})
+        second = writer.append({"request_id": "two", "value": 2})
+
+        # Then: records occupy immutable ordered segments and duplicates fail.
+        assert first.name == "segment-000001.jsonl"
+        assert second.name == "segment-000002.jsonl"
+        with pytest.raises(ArtifactError):
+>           writer.append({"request_id": "one", "value": 3})
+
+tests/unit/test_artifacts.py:20:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/hcx_eval/artifacts/writer.py:102: in append
+    with self._locked():
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:191: in __exit__
+    exc.__traceback__ = traceback
+    ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArtifactError(path=PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_rotates_segments_a0/results/run-1/raw/segment-000001.jsonl'), reason='duplicate request_id')
+name = '__traceback__', value = <traceback object at 0x75c8c6d58140>
+
+>   ???
+E   TypeError: super(type, obj): obj must be an instance or subtype of type
+
+<string>:5: TypeError
+____________________ test_writer_saves_exact_raw_bytes_once ____________________
+
+self = <hcx_eval.artifacts.writer.SegmentedJsonlWriter object at 0x75c8c6d84050>
+path = PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json')
+payload = b'different'
+
+    def _write_once(self, path: Path, payload: bytes) -> Path:
+        with self._locked():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+>               descriptor = os.open(
+                    path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600
+                )
+E               FileExistsError: [Errno 17] File exists: '/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json'
+
+src/hcx_eval/artifacts/writer.py:150: FileExistsError
+
+The above exception was the direct cause of the following exception:
+
+self = <contextlib._GeneratorContextManager object at 0x75c8c6d84e90>
+typ = <class 'hcx_eval.artifacts.writer.ArtifactError'>
+value = ArtifactError(path=PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json'), reason='artifact already exists')
+traceback = <traceback object at 0x75c8c6d85600>
+
+    def __exit__(self, typ, value, traceback):
+        if typ is None:
+            try:
+                next(self.gen)
+            except StopIteration:
+                return False
+            else:
+                try:
+                    raise RuntimeError("generator didn't stop")
+                finally:
+                    self.gen.close()
+        else:
+            if value is None:
+                # Need to force instantiation so we can reliably
+                # tell if we get the same exception back
+                value = typ()
+            try:
+>               self.gen.throw(typ, value, traceback)
+
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:158:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/hcx_eval/artifacts/writer.py:60: in _locked
+    yield
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = <hcx_eval.artifacts.writer.SegmentedJsonlWriter object at 0x75c8c6d84050>
+path = PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json')
+payload = b'different'
+
+    def _write_once(self, path: Path, payload: bytes) -> Path:
+        with self._locked():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                descriptor = os.open(
+                    path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600
+                )
+            except FileExistsError as error:
+>               raise ArtifactError(path=path, reason="artifact already exists") from error
+E               hcx_eval.artifacts.writer.ArtifactError: unsafe artifact operation at /tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json: artifact already exists
+
+src/hcx_eval/artifacts/writer.py:154: ArtifactError
+
+During handling of the above exception, another exception occurred:
+
+tmp_path = PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0')
+
+    def test_writer_saves_exact_raw_bytes_once(tmp_path: Path) -> None:
+        # Given: provider bytes whose whitespace is evidence.
+        writer = SegmentedJsonlWriter(tmp_path / "results", "run-1")
+        payload = b'{ "models": ["HCX-005"] }\n'
+
+        # When: a raw snapshot is stored.
+        snapshot = writer.snapshot_bytes("models-response.json", payload)
+
+        # Then: the byte representation is unchanged and cannot be overwritten.
+        assert snapshot.read_bytes() == payload
+        with pytest.raises(ArtifactError):
+>           writer.snapshot_bytes("models-response.json", b"different")
+
+tests/unit/test_artifacts.py:51:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+src/hcx_eval/artifacts/writer.py:141: in snapshot_bytes
+    snapshot = self._write_once(self._snapshot_root / name, payload)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+src/hcx_eval/artifacts/writer.py:147: in _write_once
+    with self._locked():
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/contextlib.py:191: in __exit__
+    exc.__traceback__ = traceback
+    ^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArtifactError(path=PosixPath('/tmp/pytest-of-ubuntu/pytest-19/test_writer_saves_exact_raw_by0/results/run-1/snapshots/models-response.json'), reason='artifact already exists')
+name = '__traceback__', value = <traceback object at 0x75c8c6d85600>
+
+>   ???
+E   TypeError: super(type, obj): obj must be an instance or subtype of type
+
+<string>:5: TypeError
+=========================== short test summary info ============================
+FAILED tests/unit/test_artifacts.py::test_writer_rotates_segments_and_rejects_duplicate_records
+FAILED tests/unit/test_artifacts.py::test_writer_saves_exact_raw_bytes_once
+2 failed, 20 passed in 0.35s

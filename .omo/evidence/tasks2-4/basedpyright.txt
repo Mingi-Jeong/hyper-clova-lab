@@ -1,0 +1,26 @@
+/home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:12:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:13:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:31:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:36:9 - warning: Result of call expression is of type "SourceInventory" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:20:9 - warning: Result of call expression is of type "Path" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:28:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:51:9 - warning: Result of call expression is of type "Path" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:63:9 - warning: Result of call expression is of type "SegmentedJsonlWriter" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_config.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:35:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:54:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:70:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:87:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:91:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:103:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:62:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:66:9 - warning: Result of call expression is of type "DocsRegistry" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:72:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:76:9 - warning: Result of call expression is of type "DocsRegistry" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_schemas.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_schemas.py:41:9 - warning: Result of call expression is of type "Usage" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_schemas.py:47:9 - warning: Result of call expression is of type "Timing" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+0 errors, 20 warnings, 0 notes

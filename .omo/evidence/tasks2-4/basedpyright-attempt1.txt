@@ -1,0 +1,108 @@
+/home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:16:31 - error: "JsonValue" is not exported from module "hcx_eval.security"
+    Import from "pydantic" instead (reportPrivateLocalImportUsage)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:35:9 - error: Method "__str__" is not marked as override but is overriding a method in class "BaseException" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:50:14 - error: Type annotation for attribute `_run_root` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:51:14 - error: Type annotation for attribute `_raw_root` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:52:14 - error: Type annotation for attribute `_snapshot_root` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:53:14 - error: Type annotation for attribute `_max_records` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:55:6 - error: The function "contextmanager" is deprecated
+    Annotating the return type as `-> Iterator[Foo]` with `@contextmanager` is deprecated. Use `-> Generator[Foo]` instead. (reportDeprecated)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/artifacts/writer.py:145:9 - warning: Result of call expression is of type "Path" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/src/hcx_eval/config.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/config.py:12:31 - error: "JsonValue" is not exported from module "hcx_eval.security"
+    Import from "pydantic" instead (reportPrivateLocalImportUsage)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/config.py:36:9 - error: Method "__str__" is not marked as override but is overriding a method in class "BaseException" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/config.py:43:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/config.py:77:9 - error: Type of "loaded" is Any (reportAny)
+/home/workspace/hyper-clova-lab/src/hcx_eval/datasets/inventory.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/datasets/inventory.py:15:9 - error: Method "__str__" is not marked as override but is overriding a method in class "BaseException" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/datasets/inventory.py:20:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/datasets/inventory.py:28:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+/home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:4:8 - error: Import "json" is not accessed (reportUnusedImport)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:10:52 - error: Import "TypeAdapter" is not accessed (reportUnusedImport)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:13:5 - error: Implicit string concatenation not allowed (reportImplicitStringConcatenation)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:25:9 - error: Method "__str__" is not marked as override but is overriding a method in class "BaseException" (reportImplicitOverride)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:30:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:42:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:54:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:64:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/discovery/docs_registry.py:122:21 - error: Type of "endpoint" is Any (reportAny)
+/home/workspace/hyper-clova-lab/src/hcx_eval/logging.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/logging.py:5:31 - error: "JsonValue" is not exported from module "hcx_eval.security"
+    Import from "pydantic" instead (reportPrivateLocalImportUsage)
+/home/workspace/hyper-clova-lab/src/hcx_eval/schemas/case.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/case.py:5:31 - error: "JsonValue" is not exported from module "hcx_eval.security"
+    Import from "pydantic" instead (reportPrivateLocalImportUsage)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/case.py:11:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+/home/workspace/hyper-clova-lab/src/hcx_eval/schemas/manifest.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/manifest.py:13:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+/home/workspace/hyper-clova-lab/src/hcx_eval/schemas/model.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/model.py:22:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/model.py:32:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+/home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:9:31 - error: "JsonValue" is not exported from module "hcx_eval.security"
+    Import from "pydantic" instead (reportPrivateLocalImportUsage)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:24:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:38:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:49:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:71:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+  /home/workspace/hyper-clova-lab/src/hcx_eval/schemas/results.py:91:5 - error: Type annotation for attribute `model_config` is required because this class is not decorated with `@final` (reportUnannotatedClassAttribute)
+/home/workspace/hyper-clova-lab/src/hcx_eval/security.py
+  /home/workspace/hyper-clova-lab/src/hcx_eval/security.py:39:40 - error: Pattern will never be matched for subject type "None" (reportUnnecessaryComparison)
+/home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:12:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:13:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:31:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py:36:9 - warning: Result of call expression is of type "SourceInventory" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:20:9 - warning: Result of call expression is of type "Path" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:28:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:51:9 - warning: Result of call expression is of type "Path" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py:63:9 - warning: Result of call expression is of type "SegmentedJsonlWriter" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_config.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:35:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:37:34 - error: Argument of type "Literal['secret']" cannot be assigned to parameter "clova_studio_api_key" of type "SecretStr | None" in function "__init__"
+    Type "Literal['secret']" is not assignable to type "SecretStr | None"
+      "Literal['secret']" is not assignable to "SecretStr"
+      "Literal['secret']" is not assignable to "None" (reportArgumentType)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:54:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:70:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:87:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:91:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_config.py:103:9 - warning: Result of call expression is of type "HarnessSettings" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:36:5 - error: Type of "document" is partially unknown
+    Type of "document" is "dict[str, int | str | list[Unknown]]" (reportUnknownVariableType)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:45:5 - error: Type of "snapshot" is partially unknown
+    Type of "snapshot" is "dict[str, str | int | list[dict[str, str | int]] | list[dict[str, int | str | list[Unknown]]]]" (reportUnknownVariableType)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:56:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:60:9 - warning: Result of call expression is of type "DocsRegistry" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:66:5 - warning: Result of call expression is of type "int" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py:70:9 - warning: Result of call expression is of type "DocsRegistry" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_schemas.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_schemas.py:41:9 - warning: Result of call expression is of type "Usage" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+  /home/workspace/hyper-clova-lab/tests/unit/test_schemas.py:47:9 - warning: Result of call expression is of type "Timing" and is not used; assign to variable "_" if this is intentional (reportUnusedCallResult)
+/home/workspace/hyper-clova-lab/tests/unit/test_security.py
+  /home/workspace/hyper-clova-lab/tests/unit/test_security.py:12:21 - error: Argument of type "dict[str, list[dict[str, str]] | str]" cannot be assigned to parameter "value" of type "JsonValue" in function "redact"
+    Type "dict[str, list[dict[str, str]] | str]" is not assignable to type "JsonValue"
+      "dict[str, list[dict[str, str]] | str]" is not assignable to "list[JsonValue]"
+      "dict[str, list[dict[str, str]] | str]" is not assignable to "dict[str, JsonValue]"
+        Type parameter "_VT@dict" is invariant, but "list[dict[str, str]] | str" is not the same as "JsonValue"
+        Consider switching from "dict" to "Mapping" which is covariant in the value type
+      "dict[str, list[dict[str, str]] | str]" is not assignable to "str"
+      "dict[str, list[dict[str, str]] | str]" is not assignable to "bool"
+      "dict[str, list[dict[str, str]] | str]" is not assignable to "int"
+    ... (reportArgumentType)
+  /home/workspace/hyper-clova-lab/tests/unit/test_security.py:26:21 - error: Argument of type "dict[str, str]" cannot be assigned to parameter "value" of type "JsonValue" in function "redact"
+    Type "dict[str, str]" is not assignable to type "JsonValue"
+      "dict[str, str]" is not assignable to "list[JsonValue]"
+      "dict[str, str]" is not assignable to "dict[str, JsonValue]"
+        Type parameter "_VT@dict" is invariant, but "str" is not the same as "JsonValue"
+        Consider switching from "dict" to "Mapping" which is covariant in the value type
+      "dict[str, str]" is not assignable to "str"
+      "dict[str, str]" is not assignable to "bool"
+      "dict[str, str]" is not assignable to "int"
+    ... (reportArgumentType)
+41 errors, 21 warnings, 0 notes

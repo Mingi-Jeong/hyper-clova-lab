@@ -1,0 +1,310 @@
+
+==================================== ERRORS ====================================
+__________________ ERROR collecting tests/unit/test_config.py __________________
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:287: in _init_core_attrs
+    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:56: in _getattr_no_parents
+    raise AttributeError(attribute)
+E   AttributeError: __pydantic_core_schema__
+
+During handling of the above exception, another exception occurred:
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:474: in eval_type_backport
+    return _eval_type_backport(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_typing_extra.py:511: in _eval_type_backport
+    return _eval_type(value, globalns, localns, type_params)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RecursionError: maximum recursion depth exceeded
+
+During handling of the above exception, another exception occurred:
+tests/unit/test_config.py:6: in <module>
+    from hcx_eval.config import HarnessSettings, load_settings
+src/hcx_eval/config.py:14: in <module>
+    _YAML_MAPPING: Final = TypeAdapter(dict[str, JsonValue])
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:244: in __init__
+    self._init_core_attrs(
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:306: in _init_core_attrs
+    core_schema = schema_generator.generate_schema(self._type)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1194: in _match_generic_type
+    return self._dict_schema(*self._get_first_two_args_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:402: in _dict_schema
+    return core_schema.dict_schema(self.generate_schema(keys_type), self.generate_schema(values_type))
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RecursionError: maximum recursion depth exceeded while calling a Python object
+!!! Recursion detected (same locals & position)
+_________________ ERROR collecting tests/unit/test_schemas.py __________________
+tests/unit/test_schemas.py:6: in <module>
+    from hcx_eval.schemas.results import (
+src/hcx_eval/schemas/__init__.py:3: in <module>
+    from hcx_eval.schemas.case import EvaluationCase
+src/hcx_eval/schemas/case.py:8: in <module>
+    class EvaluationCase(BaseModel):
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:256: in __new__
+    complete_model_class(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_model_construction.py:667: in complete_model_class
+    schema = gen_schema.generate_schema(cls)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1038: in _generate_schema_inner
+    return self._model_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in _model_schema
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:868: in <dictcomp>
+    {k: self._generate_md_field_schema(k, v, decorators) for k, v in fields.items()},
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1245: in _generate_md_field_schema
+    schema, metadata = self._common_field_schema(name, field_info, decorators)
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1299: in _common_field_schema
+    schema = self._apply_annotations(
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2252: in _apply_annotations
+    schema = get_inner_schema(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_schema_generation_shared.py:83: in __call__
+    schema = self._handler(source_type)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:2231: in inner_handler
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RecursionError: maximum recursion depth exceeded
+E   If you made use of an implicit recursive type alias (e.g. `MyType = list['MyType']), consider using PEP 695 type aliases instead. For more details, refer to the documentation: https://docs.pydantic.dev/2.13/concepts/types/#named-recursive-types
+!!! Recursion detected (same locals & position)
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:287: in _init_core_attrs
+    self.core_schema = _getattr_no_parents(self._type, '__pydantic_core_schema__')
+                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:56: in _getattr_no_parents
+    raise AttributeError(attribute)
+E   AttributeError: __pydantic_core_schema__
+
+During handling of the above exception, another exception occurred:
+tests/unit/test_artifacts.py:5: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/__init__.py:3: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+src/hcx_eval/artifacts/writer.py:20: in <module>
+    _JSON_OBJECT: Final = TypeAdapter(dict[str, JsonValue])
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:244: in __init__
+    self._init_core_attrs(
+.venv/lib/python3.11/site-packages/pydantic/type_adapter.py:306: in _init_core_attrs
+    core_schema = schema_generator.generate_schema(self._type)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1194: in _match_generic_type
+    return self._dict_schema(*self._get_first_two_args_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:402: in _dict_schema
+    return core_schema.dict_schema(self.generate_schema(keys_type), self.generate_schema(values_type))
+                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1184: in _match_generic_type
+    return self._union_schema(obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1344: in _union_schema
+    choices.append(self.generate_schema(arg))
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:744: in generate_schema
+    schema = self._generate_schema_inner(obj)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1043: in _generate_schema_inner
+    return self.match_type(obj)
+           ^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1161: in match_type
+    return self._match_generic_type(obj, origin)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:1188: in _match_generic_type
+    return self._list_schema(self._get_first_arg_or_any(obj))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.venv/lib/python3.11/site-packages/pydantic/_internal/_generate_schema.py:399: in _list_schema
+    return core_schema.list_schema(self.generate_schema(items_type))
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   RecursionError: maximum recursion depth exceeded while calling a Python object
+E   If you made use of an implicit recursive type alias (e.g. `MyType = list['MyType']), consider using PEP 695 type aliases instead. For more details, refer to the documentation: https://docs.pydantic.dev/2.13/concepts/types/#named-recursive-types
+!!! Recursion detected (same locals & position)
+=========================== short test summary info ============================
+ERROR tests/unit/test_config.py - RecursionError: maximum recursion depth exc...
+ERROR tests/unit/test_schemas.py - RecursionError: maximum recursion depth ex...
+ERROR tests/unit/test_artifacts.py - RecursionError: maximum recursion depth ...
+!!!!!!!!!!!!!!!!!!! Interrupted: 3 errors during collection !!!!!!!!!!!!!!!!!!!!
+3 errors in 2.06s

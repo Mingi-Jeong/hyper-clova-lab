@@ -1,0 +1,45 @@
+unformatted: File would be reformatted
+   --> src/hcx_eval/artifacts/writer.py:79:24
+    |
+78  |         try:
+    -             records = [
+    -                 _JSON_OBJECT.validate_json(line) for line in raw.splitlines()
+    -             ]
+79  +             records = [_JSON_OBJECT.validate_json(line) for line in raw.splitlines()]
+80  |         except ValueError:
+81  |             return [], False
+82  |         return records, True
+83  |
+    -     def append(
+    -         self, record: BaseModel | Mapping[str, JsonValue]
+    -     ) -> Path:
+84  +     def append(self, record: BaseModel | Mapping[str, JsonValue]) -> Path:
+85  |         """Append one redacted record, rotating rather than repairing bad tails."""
+--------------------------------------------------------------------------------
+149 |         digest = hashlib.sha256(payload).hexdigest().encode() + b"\n"
+    -         _ = self._write_once(
+    -             snapshot.with_suffix(snapshot.suffix + ".sha256"), digest
+    -         )
+150 +         _ = self._write_once(snapshot.with_suffix(snapshot.suffix + ".sha256"), digest)
+151 |         return snapshot
+--------------------------------------------------------------------------------
+156 |             try:
+    -                 descriptor = os.open(
+    -                     path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600
+    -                 )
+157 +                 descriptor = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+158 |             except FileExistsError as error:
+    |
+
+unformatted: File would be reformatted
+   --> src/hcx_eval/schemas/results.py:95:22
+   |
+94 |         """Reconcile the provider total with all reported components."""
+   -         components = (
+   -             self.prompt_tokens + self.completion_tokens + self.thinking_tokens
+   -         )
+95 +         components = self.prompt_tokens + self.completion_tokens + self.thinking_tokens
+96 |         if self.total_tokens != components:
+   |
+
+2 files would be reformatted, 24 files already formatted

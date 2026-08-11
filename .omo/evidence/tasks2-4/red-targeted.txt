@@ -1,0 +1,71 @@
+
+==================================== ERRORS ====================================
+__________________ ERROR collecting tests/unit/test_config.py __________________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_config.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_config.py:6: in <module>
+    from hcx_eval.config import HarnessSettings, load_settings
+E   ModuleNotFoundError: No module named 'hcx_eval.config'
+_________________ ERROR collecting tests/unit/test_security.py _________________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_security.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_security.py:1: in <module>
+    from hcx_eval.security import REDACTED, redact
+E   ModuleNotFoundError: No module named 'hcx_eval.security'
+___________ ERROR collecting tests/contract/test_source_inventory.py ___________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/contract/test_source_inventory.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/contract/test_source_inventory.py:5: in <module>
+    from hcx_eval.datasets.inventory import InventoryError, build_inventory
+E   ModuleNotFoundError: No module named 'hcx_eval.datasets'
+______________ ERROR collecting tests/unit/test_docs_registry.py _______________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_docs_registry.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_docs_registry.py:6: in <module>
+    from hcx_eval.discovery.docs_registry import DocsSnapshotError, parse_docs_snapshot
+E   ModuleNotFoundError: No module named 'hcx_eval.discovery'
+_________________ ERROR collecting tests/unit/test_schemas.py __________________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_schemas.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_schemas.py:6: in <module>
+    from hcx_eval.schemas.results import (
+E   ModuleNotFoundError: No module named 'hcx_eval.schemas'
+________________ ERROR collecting tests/unit/test_artifacts.py _________________
+ImportError while importing test module '/home/workspace/hyper-clova-lab/tests/unit/test_artifacts.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/home/ubuntu/.local/share/uv/python/cpython-3.11.15-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/unit/test_artifacts.py:5: in <module>
+    from hcx_eval.artifacts.writer import ArtifactError, SegmentedJsonlWriter
+E   ModuleNotFoundError: No module named 'hcx_eval.artifacts'
+=========================== short test summary info ============================
+ERROR tests/unit/test_config.py
+ERROR tests/unit/test_security.py
+ERROR tests/contract/test_source_inventory.py
+ERROR tests/unit/test_docs_registry.py
+ERROR tests/unit/test_schemas.py
+ERROR tests/unit/test_artifacts.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 6 errors during collection !!!!!!!!!!!!!!!!!!!!
+6 errors in 0.25s

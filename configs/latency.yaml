@@ -1,0 +1,8 @@
+execute: false
+warmup_successes: 5
+measured_successes: 100
+concurrency:
+  - 1
+  - 5
+  - 10
+  - 20

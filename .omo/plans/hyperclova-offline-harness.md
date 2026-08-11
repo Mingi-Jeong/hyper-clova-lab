@@ -5,9 +5,9 @@ Protected inputs are `processed-data/` and
 `naver-clova-studio-instructions-all-docs/`.
 
 - [x] 1. Initialize safe project scaffolding and an offline-safe CLI.
-- [ ] 2. Implement validated configuration and secret redaction.
-- [ ] 3. Implement source inventory and immutable snapshot hashing.
-- [ ] 4. Define schemas and append-safe artifact writer.
+- [x] 2. Implement validated configuration and secret redaction.
+- [x] 3. Implement source inventory and immutable snapshot hashing.
+- [x] 4. Define schemas and append-safe artifact writer.
 - [ ] 5. Implement native and OpenAI-compatible clients.
 - [ ] 6. Implement model discovery and capability probes.
 - [ ] 7. Build deterministic evaluation cases.

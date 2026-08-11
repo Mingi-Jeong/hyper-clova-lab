@@ -1,0 +1,8 @@
+weights:
+  financial_accuracy: 20
+  rag_grounding: 15
+  reasoning: 15
+  compliance_safety: 20
+  instruction_tools: 10
+  korean_quality: 5
+  operations: 15

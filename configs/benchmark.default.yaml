@@ -1,0 +1,9 @@
+execute: false
+data_root: ../processed-data
+naver_docs_root: ../naver-clova-studio-instructions-all-docs
+results_root: ../results
+request_timeout_seconds: 120
+max_concurrency: 5
+max_requests_per_run: 0
+max_tokens_per_run: 0
+max_estimated_cost_krw: 0
