@@ -35,6 +35,11 @@
 - Binary observables: 36 boundary cases and all 65 tests pass; 17 canonical
   policy and seven ordinary-preservation checks agree; protected hashes match.
 - Artifact: `stop-hook-direct-verification.txt`.
+- Scenario: second executor replay verifies the implementation ancestor and first
+  evidence blob in `HEAD` before rerunning boundary and complete repository gates.
+- Binary observables: ancestry and blob checks pass, 36 boundary cases pass, all
+  65 tests pass, and static gates remain clean.
+- Artifact: `stop-hook-direct-verification-2.txt`.
 
 ## Manual property-style persistence table
 
