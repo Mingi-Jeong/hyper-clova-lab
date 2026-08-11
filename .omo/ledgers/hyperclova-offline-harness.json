@@ -24,13 +24,13 @@
     "status": "completed",
     "scope": "bounded native v1/v3 and OpenAI-compatible adapters, retry/budget policy, and SSE parsing",
     "evidence": ".omo/evidence/tasks5-6/, .omo/evidence/tasks5-6-review-fixes/, and .omo/evidence/tasks5-6-security-fix/",
-    "independent_review": "BLOCK at c5a596a: provider-controlled error code can be rendered unredacted; response-body artifact redaction passed"
+    "independent_review": "PASS at 994a1ec: provider-controlled error codes and response-body artifacts are redacted"
   },
   "task_6": {
     "status": "completed",
     "scope": "documented/live model registry merge, raw model discovery, and isolated capability probes",
     "evidence": ".omo/evidence/tasks5-6/, .omo/evidence/tasks5-6-review-fixes/, and .omo/evidence/tasks5-6-security-fix/",
-    "independent_review": "BLOCK at c5a596a: provider-controlled error code can be rendered unredacted; response-body artifact redaction passed"
+    "independent_review": "PASS at 994a1ec: provider-controlled error codes and discovery failure artifacts are redacted"
   },
-  "next_task": "provider-code redaction blocker before task 7"
+  "next_task": "task 7 deterministic evaluation cases"
 }

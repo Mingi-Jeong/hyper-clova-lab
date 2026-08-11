@@ -8,8 +8,8 @@ Protected inputs are `processed-data/` and
 - [x] 2. Implement validated configuration and secret redaction.
 - [x] 3. Implement source inventory and immutable snapshot hashing.
 - [x] 4. Define schemas and append-safe artifact writer.
-- [x] 5. Implement native and OpenAI-compatible clients (latest independent review BLOCK; provider-code redaction fix required).
-- [x] 6. Implement model discovery and capability probes (latest independent review BLOCK; provider-code redaction fix required).
+- [x] 5. Implement native and OpenAI-compatible clients (independent security review PASS at `994a1ec`).
+- [x] 6. Implement model discovery and capability probes (independent security review PASS at `994a1ec`).
 - [ ] 7. Build deterministic evaluation cases.
 - [ ] 8. Implement scoring metrics.
 - [ ] 9. Implement smoke and baseline generation runners.
