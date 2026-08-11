@@ -1,0 +1,21 @@
+EXECUTOR VERIFICATION ATTEMPT 3
+artifact=.omo/evidence/tasks2-4-assignment-redaction-fix/stop-hook-direct-verification-3.txt
+scenario=current HEAD contains the implementation and both prior direct evidence artifacts
+invocation=git merge-base --is-ancestor 1a3c053 HEAD; git cat-file -e HEAD:<artifact>; git log -2 --oneline
+cc78fc1 docs: record direct assignment-redaction verification
+1a3c053 fix: redact sensitive assignment values
+observable=implementation is an ancestor and both evidence blobs exist in HEAD
+scenario=actual persistence-boundary adversarial regressions pass on current HEAD
+invocation=uv run pytest -q tests/unit/test_artifacts.py -k assignment
+..                                                                       [100%]
+2 passed, 7 deselected in 0.14s
+observable=2 passed and remaining unrelated artifact tests deselected
+scenario=current HEAD passes every repository test and quality gate
+invocation=uv run pytest -q; uv run ruff check .; uv run ruff format --check src tests; uv run basedpyright
+...............................                                          [100%]
+31 passed in 0.30s
+All checks passed!
+28 files already formatted
+0 errors, 0 warnings, 0 notes
+observable=31 passed; lint and format pass; zero type findings
+judgment=PASS current committed history directly satisfies implementation and evidence criteria

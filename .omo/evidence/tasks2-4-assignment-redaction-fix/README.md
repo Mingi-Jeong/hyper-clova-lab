@@ -37,6 +37,12 @@
   are clean, required artifacts are nonempty, and protected hashes are stable.
 - Artifacts: `stop-hook-direct-verification.txt` and
   `stop-hook-direct-verification-2.txt`.
+- Scenario: final executor audit proves the implementation commit is an ancestor
+  of current `HEAD`, the earlier evidence blobs exist in `HEAD`, and the current
+  committed tree passes boundary regressions plus every quality gate.
+- Binary observables: both evidence blobs resolve, 2 boundary tests and all 31
+  tests pass, with clean lint, formatting, and type analysis.
+- Artifact: `stop-hook-direct-verification-3.txt`.
 
 ## Manual boundary probe
 
