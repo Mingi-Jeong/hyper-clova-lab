@@ -13,7 +13,7 @@ Protected inputs are `processed-data/` and
 - [x] 7. Build deterministic evaluation cases.
 - [x] 8. Implement scoring metrics.
 - [x] 9. Implement smoke and baseline generation runners.
-- [ ] 10. Implement precise latency runner.
+- [x] 10. Implement precise latency runner.
 - [ ] 11. Implement embeddings and API-tool evaluation.
 - [ ] 12. Add capability-specific generation tracks.
 - [ ] 13. Add synthetic financial safety red-team.

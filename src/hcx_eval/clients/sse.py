@@ -67,6 +67,8 @@ class ParsedStream:
 
     events: tuple[SseEvent, ...]
     first_content_at: float | None
+    response_headers_at: float | None = None
+    closed_at: float | None = None
 
 
 def _content(value: JsonValue) -> str | None:

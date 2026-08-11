@@ -46,5 +46,9 @@
     "status": "completed",
     "scope": "bounded generation and smoke planning, separate adapter routing, append-only failure evidence, deterministic resume, and dry-run-first CLI"
   },
-  "next_task": "task 10 precise latency runner"
+  "task_10": {
+    "status": "completed",
+    "scope": "single-clock SSE headers/token/close timing, TTFT/E2E/TPOT/gap metrics, bounded closed-loop and fixed-rate scheduling, warmup labels, and failure-preserving summaries"
+  },
+  "next_task": "task 11 embeddings and API-tool evaluation"
 }

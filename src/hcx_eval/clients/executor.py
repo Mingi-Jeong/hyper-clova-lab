@@ -1,5 +1,8 @@
 """Budgeted buffered and incremental HTTP execution."""
 
+import time
+from collections.abc import Callable
+from dataclasses import replace
 from typing import ClassVar, Final, Protocol
 
 import anyio
@@ -99,6 +102,7 @@ class HttpExecutor:
     _client: httpx2.AsyncClient
     _budget: RequestBudget
     _retry_sleep: RetrySleep
+    _clock: Callable[[], float]
 
     def __init__(
         self,
@@ -106,11 +110,13 @@ class HttpExecutor:
         client: httpx2.AsyncClient,
         budget: RequestBudget,
         retry_sleep: RetrySleep = _default_retry_sleep,
+        clock: Callable[[], float] = time.monotonic,
     ) -> None:
         """Bind a configured client to shared run accounting."""
         self._client = client
         self._budget = budget
         self._retry_sleep = retry_sleep
+        self._clock = clock
 
     async def request(
         self,
@@ -160,6 +166,7 @@ class HttpExecutor:
             )
             try:
                 response = await self._client.send(request, stream=True)
+                response_headers_at = self._clock()
             except httpx2.TimeoutException as error:
                 if attempt + 1 < attempts:
                     delay = _RETRY_BACKOFF_SECONDS * (2.0**attempt)
@@ -179,11 +186,19 @@ class HttpExecutor:
                         continue
                     raise error
                 try:
-                    return await parse_sse_lines(response.aiter_lines())
+                    parsed = await parse_sse_lines(
+                        response.aiter_lines(), clock=self._clock
+                    )
                 except httpx2.TimeoutException as error:
                     raise ProviderApiError(
                         kind=ErrorKind.TIMEOUT, endpoint=endpoint
                     ) from error
             finally:
                 await response.aclose()
+                closed_at = self._clock()
+            return replace(
+                parsed,
+                response_headers_at=response_headers_at,
+                closed_at=closed_at,
+            )
         raise AssertionError
