@@ -38,5 +38,9 @@
     "case_count": 352,
     "cases_sha256": "d65159c3775da26eb8489a60c9aa663f9fe70b3d8d4237da0bd1a0e8cbe2427d"
   },
-  "next_task": "task 8 deterministic scoring metrics"
+  "task_8": {
+    "status": "completed",
+    "scope": "deterministic accuracy, retrieval, citation, JSON Schema, tool argument, safety, latency, and seeded bootstrap metrics"
+  },
+  "next_task": "task 9 bounded resumable smoke and generation runners"
 }
