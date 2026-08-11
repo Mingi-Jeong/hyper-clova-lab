@@ -14,6 +14,7 @@ from hcx_eval.clients.base import (
     sanitized_url,
 )
 from hcx_eval.clients.sse import ParsedStream, parse_sse_lines
+from hcx_eval.security import redact_bytes
 
 _CLIENT_ERROR: Final = 400
 _RETRY_BACKOFF_SECONDS: Final[float] = 1.0
@@ -57,7 +58,7 @@ def _provider_error(response: httpx2.Response, endpoint: str) -> ProviderApiErro
         http_status=response.status_code,
         provider_code=_error_details(response),
         retry_after=response.headers.get("Retry-After"),
-        response_body=response.content,
+        response_body=redact_bytes(response.content),
     )
 
 
@@ -74,14 +75,6 @@ class RetrySleep(Protocol):
 
     async def __call__(self, delay_seconds: float) -> None:
         """Wait for the chosen retry delay."""
-        ...
-
-
-class ResponseObserver(Protocol):
-    """Synchronous raw response acquisition boundary."""
-
-    def __call__(self, raw: bytes) -> None:
-        """Persist bytes before parsing or final error classification."""
         ...
 
 
@@ -126,7 +119,6 @@ class HttpExecutor:
         path: str,
         estimated_tokens: int = 0,
         json_body: JsonValue | None = None,
-        response_observer: ResponseObserver | None = None,
     ) -> httpx2.Response:
         """Dispatch a buffered request within aggregate ceilings."""
         attempts = self._budget.policy.max_retries + 1
@@ -136,15 +128,11 @@ class HttpExecutor:
             try:
                 response = await self._client.request(method, path, json=json_body)
                 if response.status_code < _CLIENT_ERROR:
-                    if response_observer is not None:
-                        response_observer(response.content)
                     return response
                 error = _provider_error(response, endpoint)
                 if _retryable(error) and attempt + 1 < attempts:
                     await self._retry_sleep(_retry_delay(error.retry_after, attempt))
                     continue
-                if response_observer is not None:
-                    response_observer(response.content)
                 raise error
             except httpx2.TimeoutException as error:
                 if attempt + 1 < attempts:

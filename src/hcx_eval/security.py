@@ -29,6 +29,13 @@ _SENSITIVE_KEY_LEAVES: Final = frozenset(
     }
 )
 _BEARER_PATTERN: Final = re.compile(r"\bbearer\s+\S+", re.IGNORECASE)
+_SENSITIVE_HEADER_PATTERN: Final = re.compile(
+    r"^(?P<header>(?:proxy-)?authorization|cookie|set-cookie)\s*:\s*[^\r\n]*",
+    re.IGNORECASE | re.MULTILINE,
+)
+_COLON_PREFIX: Final = r"(?P<prefix>['\"]?(?P<key>[A-Za-z][A-Za-z0-9_-]*)['\"]?\s*:\s*)"
+_COLON_VALUE: Final = r"(?:(?P<quote>['\"])[^'\"\r\n]*(?P=quote)|[^,}\]\r\n]+)"
+_COLON_VALUE_PATTERN: Final = re.compile(_COLON_PREFIX + _COLON_VALUE, re.IGNORECASE)
 _CLI_EQUALS_PATTERN: Final = re.compile(
     r"(?P<option>--(?:api-key|authorization))=(?P<secret>\S+)", re.IGNORECASE
 )
@@ -64,13 +71,32 @@ def _redact_assignment(match: re.Match[str]) -> str:
     return f"{key}{match.group('separator')}{quote}{REDACTED}{quote}"
 
 
+def _redact_colon_value(match: re.Match[str]) -> str:
+    if not _sensitive_key(match.group("key")):
+        return match.group(0)
+    quote = match.group("quote") or ""
+    return f"{match.group('prefix')}{quote}{REDACTED}{quote}"
+
+
+def _redact_header(match: re.Match[str]) -> str:
+    return f"{match.group('header')}: {REDACTED}"
+
+
 def redact_text(value: str) -> str:
     """Mask credential substrings while preserving surrounding useful text."""
+    value = _COLON_VALUE_PATTERN.sub(_redact_colon_value, value)
+    value = _SENSITIVE_HEADER_PATTERN.sub(_redact_header, value)
     value = _ASSIGNMENT_PATTERN.sub(_redact_assignment, value)
     value = _CLI_EQUALS_PATTERN.sub(
         lambda match: f"{match.group('option')}={REDACTED}", value
     )
     return _BEARER_PATTERN.sub(f"Bearer {REDACTED}", value)
+
+
+def redact_bytes(value: bytes) -> bytes:
+    """Sanitize an arbitrary provider body for a failure evidence boundary."""
+    decoded = value.decode("utf-8", errors="surrogateescape")
+    return redact_text(decoded).encode(errors="backslashreplace")
 
 
 def redact_cli_invocation(invocation: str) -> str:

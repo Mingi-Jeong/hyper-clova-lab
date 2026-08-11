@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from hcx_eval.security import REDACTED, redact, redact_text
+from hcx_eval.security import REDACTED, redact, redact_bytes, redact_text
 
 if TYPE_CHECKING:
     from pydantic import JsonValue
@@ -57,3 +57,21 @@ def test_redaction_masks_embedded_credentials_without_destroying_content() -> No
         secret not in result
         for secret in ("response-secret", "cli-secret", "auth-secret")
     )
+
+
+def test_binary_redaction_handles_invalid_utf8_and_sensitive_headers() -> None:
+    # Given: an arbitrary provider body containing invalid UTF-8 and credentials.
+    value = (
+        b"\xffapi_key=binary-key\n"
+        b"Authorization: Bearer binary-bearer\n"
+        b"Cookie: session=binary-cookie\n"
+    )
+
+    # When: the body crosses a failure evidence boundary.
+    result = redact_bytes(value)
+
+    # Then: sanitization is total and no original credential bytes survive.
+    assert b"binary-key" not in result
+    assert b"binary-bearer" not in result
+    assert b"binary-cookie" not in result
+    assert REDACTED.encode() in result

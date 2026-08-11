@@ -85,3 +85,72 @@ async def test_discovery_preserves_non_success_models_before_classification(
     with pytest.raises(ProviderApiError):
         _ = await discover_models(client=client, documented=(), raw_output=output)
     assert output.read_bytes() == raw
+
+
+@pytest.mark.anyio
+async def test_discovery_redacts_sensitive_non_success_evidence(
+    tmp_path: Path,
+) -> None:
+    # Given
+    raw = (
+        b"api_key=provider-reflected-key\n"
+        b"Authorization: Bearer reflected-bearer\n"
+        b"Cookie: session=reflected-cookie\n"
+    )
+
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(500, content=raw, request=request)
+
+    client = OpenAICompatibleClient(
+        base_url="https://offline.invalid/v1/openai",
+        api_key="key",
+        budget=RequestBudget(RequestPolicy(execute=True, max_requests=1, max_tokens=1)),
+        transport=httpx2.MockTransport(handler),
+    )
+    output = tmp_path / "error.sanitized.txt"
+
+    # When / Then
+    with pytest.raises(ProviderApiError) as captured:
+        _ = await discover_models(client=client, documented=(), raw_output=output)
+    persisted = output.read_bytes()
+    assert persisted == captured.value.response_body
+    assert b"provider-reflected-key" not in persisted
+    assert b"reflected-bearer" not in persisted
+    assert b"reflected-cookie" not in persisted
+    assert b"[REDACTED]" in persisted
+
+
+@pytest.mark.anyio
+async def test_discovery_redacts_sensitive_malformed_success_evidence(
+    tmp_path: Path,
+) -> None:
+    # Given
+    raw = (
+        b'{"api_key":"malformed-key",'
+        b'"authorization":"Bearer malformed-bearer",'
+        b'"cookie":"session=malformed-cookie",'
+    )
+
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, content=raw, request=request)
+
+    client = OpenAICompatibleClient(
+        base_url="https://offline.invalid/v1/openai",
+        api_key="key",
+        budget=RequestBudget(RequestPolicy(execute=True, max_requests=1, max_tokens=1)),
+        transport=httpx2.MockTransport(handler),
+    )
+    output = tmp_path / "malformed.sanitized.txt"
+
+    # When / Then
+    with pytest.raises(ValidationError) as captured:
+        _ = await discover_models(client=client, documented=(), raw_output=output)
+    persisted = output.read_bytes()
+    rendered_error = str(captured.value)
+    assert b"malformed-key" not in persisted
+    assert b"malformed-bearer" not in persisted
+    assert b"malformed-cookie" not in persisted
+    assert "malformed-key" not in rendered_error
+    assert "malformed-bearer" not in rendered_error
+    assert "malformed-cookie" not in rendered_error
+    assert b"[REDACTED]" in persisted

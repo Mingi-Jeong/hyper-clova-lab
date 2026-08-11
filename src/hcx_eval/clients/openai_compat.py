@@ -12,7 +12,7 @@ from hcx_eval.clients.base import (
     create_async_client,
     sanitized_url,
 )
-from hcx_eval.clients.executor import HttpExecutor, ResponseObserver
+from hcx_eval.clients.executor import HttpExecutor
 from hcx_eval.clients.sse import ParsedStream
 from hcx_eval.clients.types import ChatMessage
 
@@ -143,15 +143,9 @@ class OpenAICompatibleClient:
         raw = await self.fetch_models_raw()
         return self.parse_models(raw)
 
-    async def fetch_models_raw(
-        self, response_observer: ResponseObserver | None = None
-    ) -> bytes:
+    async def fetch_models_raw(self) -> bytes:
         """Acquire `/models` bytes without parsing the success payload."""
-        response = await self._executor.request(
-            method="GET",
-            path="models",
-            response_observer=response_observer,
-        )
+        response = await self._executor.request(method="GET", path="models")
         return response.content
 
     def parse_models(self, raw: bytes) -> ModelsResponse:
