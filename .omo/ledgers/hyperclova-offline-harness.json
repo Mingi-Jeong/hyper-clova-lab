@@ -62,5 +62,9 @@
     "status": "completed",
     "scope": "seven reviewed synthetic financial risk groups, masked PII persistence, bounded execution, and critical hard gates"
   },
-  "next_task": "task 14 report generators"
+  "task_14": {
+    "status": "completed",
+    "scope": "all nine evidence-linked scorecard tables, explicit missing states, separate factual and pension insight reports, golden Markdown, and write-once Pareto charts"
+  },
+  "next_task": "task 15 offline runbook and verification"
 }
