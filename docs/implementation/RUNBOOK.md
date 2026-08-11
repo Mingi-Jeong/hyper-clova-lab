@@ -71,13 +71,15 @@ uv run hcx-eval smoke \
 ```
 
 The discovery preflight must say `planned_requests=1` and
-`external_requests=0`. Smoke prints the complete eligible model set, request
-count, ceiling, and `external_requests=0`; it fails instead of truncating an
-oversized plan.
+`external_requests=0`. Smoke prints the complete eligible generation-model set,
+request count, ceiling, and `external_requests=0`; it fails instead of
+truncating an oversized plan.
 
 Task 16 and real CLOVA calls are not part of the current implementation run. At
 the later approval gate, discovery would use exactly one GET `/models` request.
-Smoke would then use one minimal text request for each live generation model.
+Smoke would then use one minimal text request for each live generation model,
+while the embedding, capability, and API-tool phases cover the rest of the
+discovered model families.
 
 ## 5. Preflight benchmark phases
 
@@ -108,7 +110,8 @@ document and query per eligible model. API tools count eligible isolated tool
 stages. Safety counts seven reviewed synthetic cases per live generation model.
 These specialized CLI phases deliberately reject `--execute` at the current
 Task 16 boundary; run full benchmarks only after discovery, smoke, scope review,
-and a separate approval.
+and a separate approval. Taken together, the baseline, capability, embedding,
+and safety phases are intended to cover every discovered model family.
 
 Do not mix specialized and generation phases in one command. Separate runs make
 protocol, failure, and cost attribution defensible.

@@ -25,10 +25,10 @@ naver-clova-studio-instructions-all-docs/
 1. OpenAI-compatible `GET /models` 결과 전부 수집
 2. native v1/v3 문서 발견 모델을 registry와 대조
 3. 각 모델을 `live`, `restricted`, `deprecated`, `unavailable`, `historical-example-only`로 판정
-4. live 모델은 공통 baseline 전수 실행
+4. live 모델은 공통 baseline 또는 해당 가족의 기본 트랙에 배치
 5. capability가 있는 모델은 기능별 트랙 추가 실행
-6. 호출 불가 모델도 오류 코드와 근거를 보존
-7. 모델 외 임베딩·RAG·리랭커·라우터 API도 별도 scorecard로 평가
+6. 임베딩·RAG·리랭커·라우터 API도 별도 scorecard로 평가
+7. 호출 불가 모델도 오류 코드와 근거를 보존
 
 ## 3. 최소 registry
 
@@ -43,12 +43,14 @@ naver-clova-studio-instructions-all-docs/
 
 ## 4. 공통 baseline과 capability별 트랙
 
-모든 live 생성 모델:
+모든 발견 모델:
 
 - short-context 금융 FAQ·코드·안전성·한국어 평가
 - streaming/non-streaming 응답시간
 - 오류·timeout·429·5xx
 - 같은 입력/목표 출력 길이 기준의 공정 비교
+
+생성 모델은 위 baseline을 전수 적용하고, 임베딩 모델은 검색/유사도/latency baseline을, 도구·기능 모델은 해당 capability의 성공률과 실패 형태를 각각 적용합니다.
 
 지원 모델만 추가:
 

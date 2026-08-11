@@ -54,6 +54,9 @@ models:
 Model-specific Thinking, Structured Outputs, function calling, vision, and
 context-limit tests remain isolated cells. An unsupported capability is evidence
 (`UNSUPPORTED`), not a quality failure and not a reason to retry blindly.
+All discovered models are expected to be covered by at least one relevant
+baseline or capability-specific track; the family determines the depth and shape
+of that coverage, not whether it is included.
 
 ## Reproducibility and failure semantics
 
